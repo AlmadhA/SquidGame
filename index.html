@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Squid Game: The VBA Chronicles</title>
+    <style>
+        :root {
+            --sg-pink: #ff007f;
+            --sg-green: #037a4b;
+            --sg-dark: #121212;
+            --gold: #ffd700;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--sg-dark);
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        /* STATS MASTER BAR */
+        .stats-container {
+            display: flex; justify-content: space-between; width: 100%; max-width: 600px;
+            background: #1e1e1e; padding: 10px 15px; border-radius: 8px;
+            border-bottom: 3px solid var(--sg-pink); box-sizing: border-box; margin-top: 10px;
+        }
+        .stat-box { text-align: center; }
+        .stat-box span { display: block; font-size: 0.75rem; color: #aaa; text-transform: uppercase; }
+        .stat-box strong { font-size: 1.2rem; color: #fff; }
+        #txt-timer { color: #ff3b30; }
+
+        /* MAIN CONTAINER FOR GAMES */
+        .game-window {
+            display: none; flex-direction: column; align-items: center;
+            width: 100%; max-width: 600px; height: calc(100vh - 100px);
+            padding: 15px; box-sizing: border-box;
+        }
+        .active-game { display: flex; }
+
+        h2.game-title { color: var(--sg-pink); margin: 5px 0 15px 0; letter-spacing: 2px; text-transform: uppercase; font-size: 1.4rem;}
+
+        /* STYLING CONTROL & ARENA */
+        .arena {
+            flex-grow: 1; width: 100%; background: #222;
+            margin-bottom: 15px; border-radius: 8px; position: relative;
+            border: 2px solid #333; overflow-y: auto; box-sizing: border-box;
+            padding: 10px;
+        }
+        .control-panel {
+            width: 100%; background: #1e1e1e; padding: 15px;
+            border-radius: 8px; display: flex; flex-direction: column; gap: 12px;
+            box-sizing: border-box;
+        }
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        .input-group label { font-size: 0.85rem; color: #aaa; font-weight: bold;}
+        select, input[type="number"] {
+            padding: 10px; background: #2a2a2a; color: white;
+            border: 1px solid #444; border-radius: 5px; font-size: 1rem; outline: none;
+        }
+        .btn-action {
+            background-color: var(--sg-pink); color: white; border: none;
+            padding: 12px; font-size: 1.1rem; font-weight: bold;
+            border-radius: 5px; cursor: pointer; transition: background 0.2s;
+        }
+        .btn-action:hover { background-color: #e0006c; }
+        .game-log { font-size: 0.9rem; color: #4cd964; text-align: center; min-height: 40px; line-height: 1.4; }
+
+        /* GAME 1: VISUAL LINTASAN */
+        #g1-arena { position: relative; background-image: linear-gradient(#2a2a2a 1px, transparent 1px); background-size: 100% 10%; overflow: hidden;}
+        .finish-line { position: absolute; top: 10%; width: 100%; height: 4px; background-color: var(--sg-pink); box-shadow: 0 0 10px var(--sg-pink); }
+        .doll-icon { position: absolute; top: 2%; left: 50%; transform: translateX(-50%); font-size: 1.8rem; }
+        #player-shape-g1 {
+            position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%);
+            width: 25px; height: 25px; background-color: #007fff; border: 2px solid white; border-radius: 50%;
+            transition: bottom 0.5s ease;
+        }
+
+        /* GAME 2: SUGAR HONEYCOMB VISUAL */
+        .biscuit-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+        .biscuit {
+            width: 150px; height: 150px; background: #e3a857; border-radius: 50%;
+            border: 8px solid #c98e3d; display: flex; align-items: center; justify-content: center;
+            font-size: 4rem; box-shadow: 0 0 15px rgba(0,0,0,0.4); position: relative;
+        }
+        .wetness-indicator { margin-top: 15px; font-weight: bold; font-size: 1.1rem; }
+
+        /* GAME 3: HOPSCOTCH GLASS GRID */
+        .glass-bridge { display: flex; flex-direction: column-reverse; gap: 8px; width: 100%; max-width: 200px; margin: 0 auto; }
+        .glass-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .glass-tile {
+            background: rgba(255,255,255,0.1); border: 2px solid #555; height: 45px;
+            border-radius: 4px; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 0.9rem; color: #888;
+        }
+        .glass-tile.revealed-solid { background: rgba(3, 122, 75, 0.4); border-color: var(--sg-green); color: white; }
+        .glass-tile.revealed-fake { background: rgba(255, 59, 48, 0.4); border-color: #ff3b30; color: #ff8888; text-decoration: line-through; }
+        .glass-tile.player-here { border: 3px dashed #007fff; background: rgba(0, 127, 255, 0.3) !important; color: white !important; }
+
+        /* OVERLAYS (WELCOME, WINNER) */
+        .fullscreen-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 100;
+        }
+        .welcome-box { text-align: center; padding: 30px; border: 2px solid var(--sg-pink); border-radius: 10px; background: #0a0a0a; max-width: 400px; margin: 15px;}
+        .welcome-box h1 { color: var(--sg-pink); letter-spacing: 3px; margin-top: 0; }
+        .btn-choice { padding: 10px 25px; font-size: 1rem; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; margin: 0 10px; }
+        #btn-yes { background-color: var(--sg-green); color: white; }
+
+        /* VICTORY PAGE */
+        #victory-screen { background: #000; border: 5px double var(--gold); box-sizing: border-box; text-align: center; display: none; z-index: 150;}
+        .gold-text { color: var(--gold); text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+        .piggy-bank { font-size: 6rem; margin: 20px 0; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    </style>
+</head>
+<body>
+
+    <!-- MASTER STATS BAR -->
+    <div id="master-stats" style="display: none;">
+        <div class="stats-container">
+            <div class="stat-box"><span>Pemain Sisa</span><strong id="txt-players">464</strong></div>
+            <div class="stat-box"><span>Waktu Sisa</span><strong id="txt-timer">05:00</strong></div>
+            <div class="stat-box"><span>Progres Game</span><strong id="txt-progress">0.00%</strong></div>
+        </div>
+    </div>
+
+    <!-- SCREEN 1: WELCOME SCREEN -->
+    <div id="welcome-overlay" class="fullscreen-overlay">
+        <div class="welcome-box">
+            <h1>SQUID GAME</h1>
+            <p>Apakah anda sudah siap mempertaruhkan segalanya?</p>
+            <button class="btn-choice" id="btn-yes" onclick="initWholeGame()">YES</button>
+            <button class="btn-choice" id="btn-no" onclick="closePage()">NO</button>
+        </div>
+    </div>
+
+    <!-- GAME 1: RED LIGHT GREEN LIGHT -->
+    <div id="game1-window" class="game-window">
+        <h2 class="game-title">Game 1: Red Light, Green Light</h2>
+        <div class="arena" id="g1-arena">
+            <div class="finish-line"></div>
+            <div class="doll-icon">🧍‍♀️</div>
+            <div id="player-shape-g1"></div>
+        </div>
+        <div class="control-panel">
+            <div class="input-group">
+                <label>PILIH MINDSET (STRATEGI RONDE INI):</label>
+                <select id="g1-mindset">
+                    <option value="">-- Pilih --</option>
+                    <option value="AGGRESSIVE">AGGRESSIVE</option>
+                    <option value="MODERATE">MODERATE</option>
+                    <option value="PASSIVE">PASSIVE</option>
+                    <option value="WAIT">WAIT</option>
+                </select>
+            </div>
+            <button class="btn-action" onclick="playG1()">NEXT TURN ➡️</button>
+            <div class="game-log" id="g1-log">Pilih mindset untuk melangkah menuju garis finis.</div>
+        </div>
+    </div>
+
+    <!-- GAME 2: SUGAR HONEYCOMBS -->
+    <div id="game2-window" class="game-window">
+        <h2 class="game-title">Game 2: Sugar Honeycombs</h2>
+        <div class="arena">
+            <div class="biscuit-container">
+                <div class="biscuit">☂️</div>
+                <div class="wetness-indicator">Kondisi Permen: <span id="g2-wetness-txt" style="color: #ff3b30;">Dry</span></div>
+            </div>
+        </div>
+        <div class="control-panel">
+            <div class="input-group">
+                <label>PILIH TINDAKAN PERMEN:</label>
+                <select id="g2-action">
+                    <option value="">-- Pilih --</option>
+                    <option value="SNAP">SNAP</option>
+                    <option value="PICK">PICK</option>
+                    <option value="LICK">LICK</option>
+                    <option value="WAIT">WAIT</option>
+                </select>
+            </div>
+            <button class="btn-action" onclick="playG2()">NEXT TURN ➡️</button>
+            <div class="game-log" id="g2-log">Gunakan air liur (LICK) untuk membasahi permen agar memotong (SNAP/PICK) menjadi lebih aman!</div>
+        </div>
+    </div>
+
+    <!-- GAME 3: HOPSCOTCH -->
+    <div id="game3-window" class="game-window">
+        <h2 class="game-title">Game 3: Glass Hopscotch</h2>
+        <div class="arena">
+            <div class="glass-bridge" id="g3-bridge">
+                <!-- Baris kaca akan di-generate otomatis via JS -->
+            </div>
+        </div>
+        <div class="control-panel">
+            <div class="input-group">
+                <label>PILIH JALUR LOMPATAN ATAU MENUNGGU MUSUH:</label>
+                <select id="g3-choice">
+                    <option value="">-- Pilih --</option>
+                    <option value="Left"></option>
+                    <option value="Right"</option>
+                    <option value="Wait"></option>
+                </select>
+            </div>
+            <button class="btn-action" onclick="playG3()">NEXT TURN ➡️</button>
+            <div class="game-log" id="g3-log">Gunakan opsi 'Wait' untuk mengorbankan sisa pemain AI di depanmu memicu kaca tipis!</div>
+        </div>
+    </div>
+
+    <!-- GAME 4: RUSSIAN ROULETTE -->
+    <div id="game4-window" class="game-window">
+        <h2 class="game-title">Game 4: Russian Roulette</h2>
+        <div class="arena" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="font-size: 5rem; margin-bottom: 10px;">🔫</div>
+            <p style="text-align:center; color:#aaa;">Pilih nomor ruang silinder silang (1-5). Jika peluru acak komputer (1-6) mengenai nomor pilihanmu, Anda kalah. Jika tidak, Giliran musuh menembak dirinya dengan nomor yang sama!</p>
+        </div>
+        <div class="control-panel">
+            <div class="input-group">
+                <label>PILIH NOMOR SILINDER (1 - 5):</label>
+                <input type="number" id="g4-choice" min="1" max="5" placeholder="Masukkan angka 1-5">
+            </div>
+            <button class="btn-action" onclick="playG4()">TARIK PELATUK 💥</button>
+            <div class="game-log" id="g4-log">Keberuntungan murni 1 lawan 1 menghadapi maut.</div>
+        </div>
+    </div>
+
+    <!-- GAME 5: ROCK PAPER SCISSORS -->
+    <div id="game5-window" class="game-window">
+        <h2 class="game-title">Final Game: Rock Paper Scissors</h2>
+        <div class="arena" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap: 20px;">
+            <div style="display:flex; gap: 40px; font-size: 3.5rem;">
+                <div id="g5-visual-player">👤</div>
+                <div>VS</div>
+                <div id="g5-visual-enemy">🤖</div>
+            </div>
+            <div id="g5-vs-status" style="font-size:1.1rem; font-weight:bold; color:var(--gold);">Gunting, Batu, Kertas babak penentu!</div>
+        </div>
+        <div class="control-panel">
+            <div class="input-group">
+                <label>PILIH TANGAN ANDA:</label>
+                <select id="g5-choice">
+                    <option value="">-- Pilih --</option>
+                    <option value="ROCK">BATU ✊</option>
+                    <option value="PAPER">KERTAS ✋</option>
+                    <option value="SCISSORS">GUNTING ✌️</option>
+                </select>
+            </div>
+            <button class="btn-action" onclick="playG5()">KIRIM TANGAN ✊✋✌️</button>
+            <div class="game-log" id="g5-log">Lawan musuh terakhir demi mencatatkan namamu sebagai pemenang utama.</div>
+        </div>
+    </div>
+
+    <!-- GRAND VICTORY OVERLAY -->
+    <div id="victory-screen" class="fullscreen-overlay">
+        <div class="piggy-bank">🐷💰</div>
+        <h1 class="gold-text" style="font-size: 2.5rem; margin: 10px 0;">SELAMAT! ANDA LOLOS</h1>
+        <h2 style="color: white; font-weight: 400;">Anda memenangkan Squid Game Edisi Terakhir!</h2>
+        <div style="background: #222; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid var(--gold);">
+            <span style="color:#aaa; font-size:1rem; text-transform:uppercase; display:block;">Hadiah Utama Tunai Ditransfer:</span>
+            <strong class="gold-text" style="font-size: 2.2rem;">Rp 465.000.000.000</strong>
+        </div>
+        <p style="color: #aaa; max-width: 400px; margin-bottom: 30px;">Seluruh kompetitor lain telah gugur. Anda berhak pulang dengan kepala tegak membawa uang tunai 465 Miliar Rupiah.</p>
+        <button class="btn-choice" id="btn-yes" onclick="location.reload()" style="box-shadow: 0 0 15px var(--sg-green);">MAIN LAGI 🔄</button>
+    </div>
+
+    <script>
+        // MASTER VARIABLES
+        let playersRemaining = 464;
+        let timeLeft = 300;
+        let progressPercent = 0.0;
+        let currentActiveWindow = "game1-window";
+
+        // Game 2 Specifics
+        let g2Wetness = "Dry";
+
+        // Game 3 Specifics
+        let g3Pathway = []; 
+        let g3Revealed = []; 
+        let enemyJumpProgress = 0;
+        let playerJumpProgress = 0;
+
+        // UI Binding Element
+        const txtPlayers = document.getElementById("txt-players");
+        const txtTimer = document.getElementById("txt-timer");
+        const txtProgress = document.getElementById("txt-progress");
+
+        function closePage() {
+            document.getElementById("welcome-overlay").innerHTML = `
+                <div class="welcome-box">
+                    <h2 style="color:var(--sg-pink);">Akses Dibatalkan</h2>
+                    <p>Mundur sebelum bertanding adalah pilihan bijak.</p>
+                </div>`;
+        }
+
+        function initWholeGame() {
+            document.getElementById("welcome-overlay").style.display = "none";
+            document.getElementById("master-stats").style.display = "block";
+            
+            playersRemaining = 464;
+            switchWindow("game1-window");
+            resetG1();
+        }
+
+        function switchWindow(targetId) {
+            document.getElementById(currentActiveWindow).classList.remove("active-game");
+            document.getElementById(targetId).classList.add("active-game");
+            currentActiveWindow = targetId;
+        }
+
+        function globalUpdateUI(localProgress) {
+            txtPlayers.textContent = playersRemaining;
+            txtProgress.textContent = (localProgress * 100).toFixed(2) + "%";
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            txtTimer.textContent = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+        }
+
+        // FUNGSI PENGGANTI ELIMINASI LANGSUNG (TANPA BSOD)
+        function triggerGameOver(reasonString) {
+            let message = "Anda Tereliminasi! ";
+            if(reasonString.includes("RED_LIGHT")) message += "Anda bergerak saat lampu merah!";
+            else if(reasonString.includes("TIMEOUT")) message += "Waktu Anda habis!";
+            else if(reasonString.includes("HONEYCOMB")) message += "Permen Dalgona Anda retak/rusak!";
+            else if(reasonString.includes("SHATTERED")) message += "Anda menginjak kaca tipis dan jatuh!";
+            else if(reasonString.includes("SHOT")) message += "Dor! Peluru mengenai silinder pilihan Anda!";
+            else if(reasonString.includes("RPS_LOSE")) message += "Anda kalah adu Gunting-Batu-Kertas di babak final!";
+            
+            alert(message + "\n\nMenghidupkan kembali... Mengulang dari Game 1.");
+            initWholeGame(); // Langsung reset total dari Game 1
+        }
+
+        // =====================================================================
+        // LOGIKA GAME 1: RED LIGHT GREEN LIGHT
+        // =====================================================================
+        function resetG1() {
+            timeLeft = 300;
+            progressPercent = 0.0;
+            globalUpdateUI(progressPercent);
+            document.getElementById("player-shape-g1").style.bottom = "5%";
+            document.getElementById("g1-mindset").value = "";
+        }
+
+        function playG1() {
+            let m = document.getElementById("g1-mindset").value;
+            if(!m) { alert("Pilih mindset terlebih dahulu!"); return; }
+
+            let caughtChance = 0, movementPercent = 0;
+            if(m === "AGGRESSIVE") { caughtChance = 0.25; movementPercent = 20; }
+            else if(m === "MODERATE") { caughtChance = 0.05; movementPercent = 10; }
+            else if(m === "PASSIVE") { caughtChance = 0.005; movementPercent = 2.5; }
+            else if(m === "WAIT") { caughtChance = 0; movementPercent = 0; }
+
+            if(Math.random() < caughtChance) {
+                triggerGameOver("GAME1_CAUGHT_RED_LIGHT");
+                return;
+            }
+
+            progressPercent += (movementPercent / 100);
+            if(progressPercent > 1) progressPercent = 1;
+
+            timeLeft -= (Math.floor(Math.random() * 21) + 20); 
+            if(timeLeft <= 0) { timeLeft = 0; globalUpdateUI(progressPercent); triggerGameOver("GAME1_TIMER_TIMEOUT"); return; }
+
+            let nonPlayerDeaths = Math.floor(Math.floor(Math.random() * (playersRemaining + 1)) * 0.2);
+            playersRemaining -= nonPlayerDeaths;
+            if(playersRemaining < 2) playersRemaining = 2;
+
+            globalUpdateUI(progressPercent);
+            document.getElementById("player-shape-g1").style.bottom = (5 + (progressPercent * 80)) + "%";
+
+            if(progressPercent >= 1) {
+                alert(`Kerja bagus! Anda lolos Game Pertama. Sisa pemain: ${playersRemaining}. Bersiap untuk Game 2.`);
+                switchWindow("game2-window");
+                resetG2();
+                return;
+            }
+
+            document.getElementById("g1-log").textContent = `Aman! Pergerakan +${movementPercent}%. Musuh mati ${nonPlayerDeaths} orang. Terus melangkah!`;
+        }
+
+        // =====================================================================
+        // LOGIKA GAME 2: SUGAR HONEYCOMBS
+        // =====================================================================
+        function resetG2() {
+            timeLeft = 300;
+            progressPercent = 0.0;
+            g2Wetness = "Dry";
+            document.getElementById("g2-wetness-txt").textContent = g2Wetness;
+            document.getElementById("g2-wetness-txt").style.color = "#ff3b30";
+            document.getElementById("g2-action").value = "";
+            globalUpdateUI(progressPercent);
+        }
+
+        function playG2() {
+            let act = document.getElementById("g2-action").value;
+            if(!act) { alert("Pilih tindakan permen!"); return; }
+
+            let progressIncrement = 0, failureChance = 0;
+
+            if(act === "SNAP") {
+                progressIncrement = 20;
+                if(g2Wetness === "Dry") failureChance = 0.5;
+                else if(g2Wetness === "Moist" || g2Wetness === "Soggy") failureChance = 0.2;
+                else if(g2Wetness === "Wet") failureChance = 1;
+            } else if(act === "PICK") {
+                progressIncrement = 10;
+                if(g2Wetness === "Dry") failureChance = 0.4;
+                else if(g2Wetness === "Moist" || g2Wetness === "Soggy") failureChance = 0.02;
+                else if(g2Wetness === "Wet") failureChance = 0.25;
+            } else if(act === "LICK") {
+                progressIncrement = 1;
+                if(g2Wetness === "Wet") failureChance = 1;
+                else failureChance = 0;
+            } else if(act === "WAIT") {
+                progressIncrement = 0; failureChance = 0;
+            }
+
+            if(Math.random() < failureChance) {
+                triggerGameOver("GAME2_HONEYCOMB_BISCUIT_BROKE");
+                return;
+            }
+
+            progressPercent += (progressIncrement / 100);
+            if(progressPercent > 1) progressPercent = 1;
+
+            if(act === "LICK") {
+                if(g2Wetness === "Dry") g2Wetness = "Moist";
+                else if(g2Wetness === "Moist") g2Wetness = "Soggy";
+                else if(g2Wetness === "Soggy" || g2Wetness === "Wet") g2Wetness = "Wet";
+            } else {
+                if(g2Wetness === "Wet") g2Wetness = "Soggy";
+                else if(g2Wetness === "Soggy") g2Wetness = "Moist";
+                else if(g2Wetness === "Moist" || g2Wetness === "Dry") g2Wetness = "Dry";
+            }
+
+            const wetColors = {"Dry":"#ff3b30", "Moist":"#ffcc00", "Soggy": "#4cd964", "Wet": "#007fff"};
+            document.getElementById("g2-wetness-txt").textContent = g2Wetness;
+            document.getElementById("g2-wetness-txt").style.color = wetColors[g2Wetness];
+
+            timeLeft -= (Math.floor(Math.random() * 6) + 10); 
+            if(timeLeft <= 0) { timeLeft = 0; globalUpdateUI(progressPercent); triggerGameOver("GAME2_TIMER_TIMEOUT"); return; }
+
+            let nonPlayerDeaths = Math.floor(Math.floor(Math.random() * (playersRemaining + 1)) * 0.05);
+            playersRemaining -= nonPlayerDeaths;
+            if(playersRemaining < 2) playersRemaining = 2;
+
+            globalUpdateUI(progressPercent);
+
+            if(progressPercent >= 1) {
+                alert(`Luar biasa! Cetakan utuh sempurna. Sisa pemain: ${playersRemaining}. Masuk ke Game 3.`);
+                switchWindow("game3-window");
+                resetG3();
+                return;
+            }
+
+            document.getElementById("g2-log").textContent = `Selamat! Cetakan tidak retak. Jarak bertambah +${progressIncrement}%. ${nonPlayerDeaths} musuh ditembak mati.`;
+        }
+
+        // =====================================================================
+        // LOGIKA GAME 3: HOPSCOTCH (GLASS BRIDGE)
+        // =====================================================================
+        function resetG3() {
+            timeLeft = 300;
+            progressPercent = 0.0;
+            enemyJumpProgress = 0;
+            playerJumpProgress = 0;
+            g3Pathway = [];
+            g3Revealed = [];
+
+            for(let i=0; i<6; i++) {
+                if(Math.random() < 0.5) { g3Pathway.push({left:"Yes", right:"No"}); }
+                else { g3Pathway.push({left:"No", right:"Yes"}); }
+                g3Revealed.push({left:null, right:null});
+            }
+
+            renderG3Bridge();
+            globalUpdateUI(progressPercent);
+            document.getElementById("g3-choice").value = "";
+            document.getElementById("g3-log").textContent = "Jembatan kaca siap. Pilih langkah kiri/kanan atau tunggu!";
+        }
+
+        function renderG3Bridge() {
+            const bridgeContainer = document.getElementById("g3-bridge");
+            bridgeContainer.innerHTML = "";
+            for(let i=0; i<6; i++) {
+                const rowDiv = document.createElement("div");
+                rowDiv.className = "glass-row";
+
+                const leftTile = document.createElement("div");
+                leftTile.className = "glass-tile";
+                leftTile.textContent = `L${i+1}`;
+                if(g3Revealed[i].left === 1) leftTile.classList.add("revealed-solid");
+                if(g3Revealed[i].left === 0) leftTile.classList.add("revealed-fake");
+                if(playerJumpProgress === (i + 1)) leftTile.classList.add("player-here");
+
+                const rightTile = document.createElement("div");
+                rightTile.className = "glass-tile";
+                rightTile.textContent = `R${i+1}`;
+                if(g3Revealed[i].right === 1) rightTile.classList.add("revealed-solid");
+                if(g3Revealed[i].right === 0) rightTile.classList.add("revealed-fake");
+                if(playerJumpProgress === (i + 1)) rightTile.classList.add("player-here"); 
+
+                rowDiv.appendChild(leftTile);
+                rowDiv.appendChild(rightTile);
+                bridgeContainer.appendChild(rowDiv);
+            }
+        }
+
+        function playG3() {
+            let choice = document.getElementById("g3-choice").value;
+            if(!choice) { alert("Tentukan pilihan langkah!"); return; }
+
+            let currentEnemyJump = enemyJumpProgress + 1;
+            let currentPlayerJump = playerJumpProgress + 1;
+
+            if(choice === "Left" || choice === "Right") {
+                if(currentPlayerJump > 6) {
+                    playersRemaining = Math.floor(playersRemaining / 2);
+                    alert(`Kemenangan! Anda berhasil menyeberang. Sisa pemain: ${playersRemaining}. Lanjut ke Game 4.`);
+                    switchWindow("game4-window");
+                    document.getElementById("g4-log").textContent = "Pilih angka silinder aman Anda.";
+                    globalUpdateUI(0);
+                    return;
+                }
+
+                let solidTile = "";
+                let idx = currentPlayerJump - 1;
+
+                if(choice === "Left") {
+                    solidTile = g3Pathway[idx].left;
+                    g3Revealed[idx].left = (solidTile === "Yes" ? 1 : 0);
+                    g3Revealed[idx].right = (solidTile === "Yes" ? 0 : 1);
+                } else {
+                    solidTile = g3Pathway[idx].right;
+                    g3Revealed[idx].right = (solidTile === "Yes" ? 1 : 0);
+                    g3Revealed[idx].left = (solidTile === "Yes" ? 0 : 1);
+                }
+
+                playerJumpProgress++;
+                enemyJumpProgress = Math.min(playerJumpProgress, enemyJumpProgress + 1);
+                progressPercent += (1 / 7);
+
+                renderG3Bridge();
+
+                if(solidTile !== "Yes") {
+                    triggerGameOver("GAME3_GLASS_SHATTERED_FELL");
+                    return;
+                }
+
+            } else if(choice === "Wait") {
+                if(currentEnemyJump > 6) {
+                    alert("Pemain di depan sudah membuka semua kaca!");
+                    return;
+                }
+                let idx = currentEnemyJump - 1;
+                let revealedCol = Math.random() < 0.5 ? "left" : "right";
+
+                if(revealedCol === "left") {
+                    let isSolid = g3Pathway[idx].left === "Yes";
+                    g3Revealed[idx].left = isSolid ? 1 : 0;
+                    g3Revealed[idx].right = isSolid ? 0 : 1;
+                    if(!isSolid) playersRemaining--;
+                } else {
+                    let isSolid = g3Pathway[idx].right === "Yes";
+                    g3Revealed[idx].right = isSolid ? 1 : 0;
+                    g3Revealed[idx].left = isSolid ? 0 : 1;
+                    if(!isSolid) playersRemaining--;
+                }
+
+                enemyJumpProgress++;
+                renderG3Bridge();
+            }
+
+            timeLeft -= 25;
+            if(timeLeft <= 0) { timeLeft = 0; globalUpdateUI(progressPercent); triggerGameOver("GAME3_TIMER_TIMEOUT"); return; }
+            if(playersRemaining < 1) playersRemaining = 1;
+
+            globalUpdateUI(progressPercent);
+            document.getElementById("g3-log").textContent = `Anda memilih: ${choice}. Sisa waktu: ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`;
+        }
+
+        // =====================================================================
+        // LOGIKA GAME 4: RUSSIAN ROULETTE
+        // =====================================================================
+        function playG4() {
+            let choiceVal = parseInt(document.getElementById("g4-choice").value);
+            if(isNaN(choiceVal) || choiceVal < 1 || choiceVal > 5) {
+                alert("Masukkan angka antara 1 sampai 5!");
+                return;
+            }
+
+            let playerRoll = Math.floor(Math.random() * 6) + 1;
+            if(playerRoll === choiceVal) {
+                triggerGameOver("GAME4_BANG_YOU_SHOT_YOURSELF");
+                return;
+            }
+
+            let enemyRoll = Math.floor(Math.random() * 6) + 1;
+            if(enemyRoll === choiceVal) {
+                playersRemaining = Math.round(playersRemaining / 2);
+                alert(`Musuh memicu peluru aktif! Anda menang! Sisa pemain: ${playersRemaining}. Bersiap untuk BABAK FINAL!`);
+                switchWindow("game5-window");
+                globalUpdateUI(0);
+                return;
+            }
+
+            document.getElementById("g4-log").textContent = `Klik! Senjata kosong (Angka keluar: ${playerRoll}). Musuh juga aman (${enemyRoll}). Tarik kembali pelatuknya!`;
+        }
+
+        // =====================================================================
+        // LOGIKA GAME 5: ROCK PAPER SCISSORS (FINAL)
+        // =====================================================================
+        function playG5() {
+            let pChoice = document.getElementById("g5-choice").value;
+            if(!pChoice) { alert("Pilih tangan Anda!"); return; }
+
+            let enemyRoll = Math.floor(Math.random() * 3) + 1;
+            let eChoice = "";
+            if(enemyRoll === 1) eChoice = "ROCK";
+            else if(enemyRoll === 2) eChoice = "PAPER";
+            else if(enemyRoll === 3) eChoice = "SCISSORS";
+
+            const hands = {"ROCK":"✊", "PAPER":"✋", "SCISSORS":"✌️"};
+            document.getElementById("g5-visual-player").textContent = hands[pChoice];
+            document.getElementById("g5-visual-enemy").textContent = hands[eChoice];
+
+            if(pChoice === eChoice) {
+                document.getElementById("g5-vs-status").textContent = `Seri! Sama-sama mengeluarkan ${pChoice}. Ulangi!`;
+                return;
+            }
+
+            if (
+                (pChoice === "ROCK" && eChoice === "SCISSORS") ||
+                (pChoice === "PAPER" && eChoice === "ROCK") ||
+                (pChoice === "SCISSORS" && eChoice === "PAPER")
+            ) {
+                playersRemaining = Math.floor(playersRemaining / 2);
+                globalUpdateUI(1);
+                document.getElementById("master-stats").style.display = "none";
+                document.getElementById("game5-window").style.display = "none";
+                document.getElementById("victory-screen").style.display = "flex";
+            } else {
+                triggerGameOver("GAME5_FINAL_RPS_LOSE_ELIMINATED");
+            }
+        }
+    </script>
+</body>
+</html>
