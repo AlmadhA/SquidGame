@@ -160,7 +160,7 @@
             <p>Apakah anda sudah siap mempertaruhkan segalanya?</p>
             <div class="input-group" style="margin-bottom: 20px; text-align: left;">
                 <label for="player-name-input">NAMA ANDA:</label>
-                <input type="text" id="player-name-input" placeholder="Masukkan nama panggilan..." autocomplete="off">
+                <input type="text" id="player-name-input" placeholder="Masukkan nama..." autocomplete="off">
             </div>
             <button class="btn-choice" id="btn-yes" onclick="initWholeGame()">YES, SAYA SIAP</button>
             <button class="btn-choice" id="btn-no" onclick="closePage()">NO</button>
@@ -217,8 +217,7 @@
     <div id="game3-window" class="game-window">
         <h2 class="game-title">Game 3: Glass Hopscotch</h2>
         <div class="arena">
-            <div class="glass-bridge" id="g3-bridge">
-                </div>
+            <div class="glass-bridge" id="g3-bridge"></div>
         </div>
         <div class="control-panel">
             <div class="input-group">
@@ -361,7 +360,7 @@
                         .insert([{ name: currentPlayerName, score: totalSkorBobot }]);
                     
                     if (error) throw error;
-                    ambilTopSkorGlobal(); // Refresh tampilan papan top skor
+                    await ambilTopSkorGlobal(); // Refresh tampilan papan top skor
                 } catch (err) {
                     console.error("Gagal mengirim data skor baru:", err.message);
                 }
@@ -384,7 +383,7 @@
             }
             currentPlayerName = nameInput;
 
-            document.getElementById("welcome-overlay").style.style.display = "none";
+            document.getElementById("welcome-overlay").style.display = "none"; // Fixed style bug here
             document.getElementById("master-stats").style.display = "block";
             
             playersRemaining = 464;
@@ -406,7 +405,6 @@
             txtTimer.textContent = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
         }
 
-        // FUNGSI PENGGANTI ELIMINASI LANGSUNG (TANPA BSOD + VALIDASI REKOR GLOBAL)
         function triggerGameOver(reasonString, currentProgressCalculated) {
             let message = "Anda Tereliminasi! ";
             if(reasonString.includes("RED_LIGHT")) message += "Anda bergerak saat lampu merah!";
@@ -418,10 +416,9 @@
             
             alert(message + `\n\nProgres akhir Anda: ${(currentProgressCalculated * 100).toFixed(2)}%`);
             
-            // Periksa & Kirim ke Supabase jika memecahkan rekor global sebelum reset
             periksaDanKirimSkorGlobal(currentProgressCalculated).then(() => {
                 alert("Menghidupkan kembali... Mengulang dari Game 1.");
-                location.reload(); // Hard reset untuk kestabilan state game
+                location.reload(); 
             });
         }
 
@@ -692,7 +689,7 @@
 
             let playerRoll = Math.floor(Math.random() * 6) + 1;
             if(playerRoll === choiceVal) {
-                triggerGameOver("GAME4_BANG_YOU_SHOT_YOURSELF", 0.65); // Kalah tembak mati dapat nilai dasar babak 4
+                triggerGameOver("GAME4_BANG_YOU_SHOT_YOURSELF", 0.65); 
                 return;
             }
 
@@ -741,10 +738,9 @@
                 document.getElementById("game5-window").style.display = "none";
                 document.getElementById("victory-screen").style.display = "flex";
                 
-                // Kirim rekor kemenangan sempurna 100% ke database global
                 periksaDanKirimSkorGlobal(1.00);
             } else {
-                triggerGameOver("GAME5_FINAL_RPS_LOSE_ELIMINATED", 0.85); // Gugur di babak final dapat nilai apresiasi tinggi 85%
+                triggerGameOver("GAME5_FINAL_RPS_LOSE_ELIMINATED", 0.85); 
             }
         }
     </script>
