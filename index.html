@@ -159,7 +159,7 @@
             <h1>SQUID GAME</h1>
             <p>Apakah anda sudah siap mempertaruhkan segalanya?</p>
             <div class="input-group" style="margin-bottom: 20px; text-align: left;">
-                <label for="player-name-input">NAMA IDENTITAS ANDA:</label>
+                <label for="player-name-input">NAMA ANDA:</label>
                 <input type="text" id="player-name-input" placeholder="Masukkan nama panggilan..." autocomplete="off">
             </div>
             <button class="btn-choice" id="btn-yes" onclick="initWholeGame()">YES, SAYA SIAP</button>
@@ -329,7 +329,7 @@
         async function ambilTopSkorGlobal() {
             try {
                 const { data, error } = await supabase
-                    .from('leaderboard_squid')
+                    .from('leaderboard_squidgame')
                     .select('name, score')
                     .order('score', { ascending: false })
                     .limit(1);
@@ -337,8 +337,8 @@
                 if (error) throw error;
 
                 if (data && data.length > 0) {
-                    globalTopName = data[0].nama;
-                    globalTopScore = parseFloat(data[0].skor);
+                    globalTopName = data[0].name;
+                    globalTopScore = parseFloat(data[0].score);
                     document.getElementById("top-username").textContent = globalTopName;
                     document.getElementById("top-val").textContent = globalTopScore.toFixed(2) + "%";
                 } else {
@@ -358,7 +358,7 @@
                 try {
                     const { error } = await supabase
                         .from('leaderboard_squidgame')
-                        .insert([{ nama: currentPlayerName, skor: totalSkorBobot }]);
+                        .insert([{ name: currentPlayerName, score: totalSkorBobot }]);
                     
                     if (error) throw error;
                     ambilTopSkorGlobal(); // Refresh tampilan papan top skor
