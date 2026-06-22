@@ -22,27 +22,45 @@
             align-items: center;
             min-height: 100vh;
             user-select: none;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
-        /* LIVE GLOBAL LEADERBOARD (POJOK KANAN ATAS) */
-        .global-top-score {
+        /* LIVE GLOBAL LEADERBOARD TOP 10 (POJOK KANAN ATAS) */
+        .global-leaderboard {
             position: fixed;
             top: 12px;
             right: 12px;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.85);
             border: 1px solid var(--gold);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.78rem;
             z-index: 200;
             box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
-            pointer-events: none;
+            max-width: 220px;
+            max-height: 70vh;
+            overflow-y: auto;
         }
-        .global-top-score span {
+        .global-leaderboard h3 {
+            margin: 0 0 6px 0;
             color: var(--gold);
-            font-weight: bold;
+            font-size: 0.85rem;
+            text-align: center;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 6px;
         }
+        .leaderboard-list { list-style: none; margin: 0; padding: 0; }
+        .leaderboard-list li {
+            display: flex; justify-content: space-between; gap: 8px;
+            padding: 3px 0; color: #ddd; white-space: nowrap;
+        }
+        .leaderboard-list li .rank { color: var(--gold); font-weight: bold; min-width: 20px; }
+        .leaderboard-list li .lb-name { flex-grow: 1; overflow: hidden; text-overflow: ellipsis; text-align: left; padding: 0 6px; }
+        .leaderboard-list li .lb-score { color: #4cd964; font-weight: bold; }
+        .leaderboard-list li.is-you { background: rgba(255,0,127,0.15); border-radius: 4px; }
+        .leaderboard-empty { color: #888; text-align: center; padding: 6px 0; font-size: 0.75rem; }
+        .leaderboard-error { color: #ff6b6b; text-align: center; padding: 6px 0; font-size: 0.72rem; line-height: 1.3; }
 
         /* STATS MASTER BAR */
         .stats-container {
@@ -142,8 +160,11 @@
 </head>
 <body>
 
-    <div class="global-top-score">
-        🏆 Top Score Global: <span id="top-username">Loading...</span> (<span id="top-val">0.00%</span>)
+    <div class="global-leaderboard">
+        <h3>🏆 TOP 10 GLOBAL</h3>
+        <ol class="leaderboard-list" id="leaderboard-list">
+            <li class="leaderboard-empty">Memuat data...</li>
+        </ol>
     </div>
 
     <div id="master-stats" style="display: none;">
@@ -157,12 +178,12 @@
     <div id="welcome-overlay" class="fullscreen-overlay">
         <div class="welcome-box">
             <h1>SQUID GAME</h1>
-            <p>Are You Ready?</p>
+            <p>Apakah anda sudah siap mempertaruhkan segalanya?</p>
             <div class="input-group" style="margin-bottom: 20px; text-align: left;">
-                <label for="player-name-input">Your Name:</label>
+                <label for="player-name-input">NAMA ANDA:</label>
                 <input type="text" id="player-name-input" placeholder="Masukkan nama..." autocomplete="off">
             </div>
-            <button class="btn-choice" id="btn-yes" onclick="initWholeGame()">YES</button>
+            <button class="btn-choice" id="btn-yes" onclick="initWholeGame()">YES, SAYA SIAP</button>
             <button class="btn-choice" id="btn-no" onclick="closePage()">NO</button>
         </div>
     </div>
@@ -293,12 +314,13 @@
         // SUPABASE CREDENTIALS DIRECT CONNECTION
         const SUPABASE_URL = "https://eqfimiakzjmsighcptyk.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJip3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZmltaWFremptc2lnaGNwdHlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwODg5NDAsImV4cCI6MjA5NzY2NDk0MH0.vDuenbu4wymeAEEC731forj9HKYgeNTuG5_DTiLfZ0U";
+        // FIX: nama variabel diganti jadi "supabaseClient" agar tidak menimpa
+        // objek global "supabase" yang berasal dari CDN library di atas.
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // LEADERBOARD INDEPENDENT VARIABLES
         let currentPlayerName = "Anonim";
-        let globalTopScore = 0.0;
-        let globalTopName = "Belum Ada";
+        let cachedLeaderboard = []; // menyimpan top 10 hasil fetch terakhir
 
         // MASTER COMPONENT GAME LOGIC
         let playersRemaining = 464;
@@ -320,50 +342,81 @@
         const txtTimer = document.getElementById("txt-timer");
         const txtProgress = document.getElementById("txt-progress");
 
-        // MEMUAT DATA TOP SKOR KETIKA HALAMAN PERTAMA KALI DIBUKA
+        // MEMUAT DATA TOP 10 SKOR KETIKA HALAMAN PERTAMA KALI DIBUKA
         window.addEventListener("DOMContentLoaded", () => {
             ambilTopSkorGlobal();
         });
 
+        // =====================================================================
+        // LEADERBOARD TOP 10 (GANTI DARI VERSI TOP 1 SEBELUMNYA)
+        // =====================================================================
         async function ambilTopSkorGlobal() {
+            const listEl = document.getElementById("leaderboard-list");
             try {
                 const { data, error } = await supabaseClient
                     .from('leaderboard_squidgame')
                     .select('name, score')
                     .order('score', { ascending: false })
-                    .limit(1);
+                    .limit(10);
 
                 if (error) throw error;
 
-                if (data && data.length > 0) {
-                    globalTopName = data[0].name;
-                    globalTopScore = parseFloat(data[0].score);
-                    document.getElementById("top-username").textContent = globalTopName;
-                    document.getElementById("top-val").textContent = globalTopScore.toFixed(2) + "%";
-                } else {
-                    document.getElementById("top-username").textContent = "Belum Ada";
-                    document.getElementById("top-val").textContent = "0.00%";
-                }
+                cachedLeaderboard = data || [];
+                renderLeaderboard();
             } catch (err) {
-                console.error("Gagal menarik data Top Score:", err.message);
-                document.getElementById("top-username").textContent = "Offline Error";
+                console.error("Gagal menarik data Leaderboard:", err.message);
+                listEl.innerHTML = `<li class="leaderboard-error">Gagal memuat: ${err.message}</li>`;
             }
+        }
+
+        function renderLeaderboard() {
+            const listEl = document.getElementById("leaderboard-list");
+
+            if (!cachedLeaderboard || cachedLeaderboard.length === 0) {
+                listEl.innerHTML = `<li class="leaderboard-empty">Belum ada data</li>`;
+                return;
+            }
+
+            listEl.innerHTML = cachedLeaderboard.map((row, i) => {
+                const isYou = row.name === currentPlayerName ? "is-you" : "";
+                const scoreVal = parseFloat(row.score).toFixed(2);
+                return `<li class="${isYou}">
+                            <span class="rank">#${i + 1}</span>
+                            <span class="lb-name">${escapeHtml(row.name)}</span>
+                            <span class="lb-score">${scoreVal}%</span>
+                        </li>`;
+            }).join("");
+        }
+
+        // Sanitasi sederhana supaya nama pemain tidak merusak HTML
+        function escapeHtml(str) {
+            const div = document.createElement("div");
+            div.textContent = str;
+            return div.innerHTML;
         }
 
         async function periksaDanKirimSkorGlobal(skorAktivitas) {
             let totalSkorBobot = skorAktivitas * 100;
-            if (totalSkorBobot > globalTopScore) {
-                alert(`🏆 REKOR BARU! ${currentPlayerName} berhasil memecahkan rekor tertinggi global baru dengan skor ${totalSkorBobot.toFixed(2)}%!`);
-                try {
-                    const { error } = await supabaseClient
-                        .from('leaderboard_squidgame')
-                        .insert([{ name: currentPlayerName, score: totalSkorBobot }]);
-                    
-                    if (error) throw error;
-                    await ambilTopSkorGlobal(); // Refresh tampilan papan top skor
-                } catch (err) {
-                    console.error("Gagal mengirim data skor baru:", err.message);
+            // Cek apakah skor ini layak masuk Top 10 saat ini (berdasarkan cache lokal)
+            let lowestInTop10 = cachedLeaderboard.length >= 10
+                ? parseFloat(cachedLeaderboard[cachedLeaderboard.length - 1].score)
+                : -1;
+            let masukTop10 = cachedLeaderboard.length < 10 || totalSkorBobot > lowestInTop10;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('leaderboard_squidgame')
+                    .insert([{ name: currentPlayerName, score: totalSkorBobot }]);
+
+                if (error) throw error;
+
+                if (masukTop10) {
+                    alert(`🏆 SELAMAT! ${currentPlayerName} berhasil masuk TOP 10 LEADERBOARD dengan skor ${totalSkorBobot.toFixed(2)}%!`);
                 }
+
+                await ambilTopSkorGlobal(); // Refresh tampilan leaderboard top 10
+            } catch (err) {
+                console.error("Gagal mengirim data skor baru:", err.message);
             }
         }
 
@@ -383,7 +436,7 @@
             }
             currentPlayerName = nameInput;
 
-            document.getElementById("welcome-overlay").style.display = "none"; // Fixed style bug here
+            document.getElementById("welcome-overlay").style.display = "none";
             document.getElementById("master-stats").style.display = "block";
             
             playersRemaining = 464;
