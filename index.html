@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Squid Game: The VBA Chronicles</title>
+    <title>Squid Game: The Ultimate Edition</title>
     <style>
         :root {
             --sg-pink: #ff007f;
@@ -161,29 +161,29 @@
 <body>
 
     <div class="global-leaderboard">
-        <h3>🏆 TOP 10 GLOBAL</h3>
+        <h3>🏆 TOP 10 Leaderboard</h3>
         <ol class="leaderboard-list" id="leaderboard-list">
-            <li class="leaderboard-empty">Memuat data...</li>
+            <li class="leaderboard-empty">Loading Data ...</li>
         </ol>
     </div>
 
     <div id="master-stats" style="display: none;">
         <div class="stats-container">
-            <div class="stat-box"><span>Pemain Sisa</span><strong id="txt-players">464</strong></div>
-            <div class="stat-box"><span>Waktu Sisa</span><strong id="txt-timer">05:00</strong></div>
-            <div class="stat-box"><span>Progres Game</span><strong id="txt-progress">0.00%</strong></div>
+            <div class="stat-box"><span>Player Left</span><strong id="txt-players">464</strong></div>
+            <div class="stat-box"><span>Time Left</span><strong id="txt-timer">05:00</strong></div>
+            <div class="stat-box"><span>Game Progress</span><strong id="txt-progress">0.00%</strong></div>
         </div>
     </div>
 
     <div id="welcome-overlay" class="fullscreen-overlay">
         <div class="welcome-box">
             <h1>SQUID GAME</h1>
-            <p>Apakah anda sudah siap mempertaruhkan segalanya?</p>
+            <p>Are You Ready?</p>
             <div class="input-group" style="margin-bottom: 20px; text-align: left;">
-                <label for="player-name-input">NAMA ANDA:</label>
+                <label for="player-name-input">Your Name:</label>
                 <input type="text" id="player-name-input" placeholder="Masukkan nama..." autocomplete="off">
             </div>
-            <button class="btn-choice" id="btn-yes" onclick="initWholeGame()">YES, SAYA SIAP</button>
+            <button class="btn-choice" id="btn-yes" onclick="initWholeGame()">YES</button>
             <button class="btn-choice" id="btn-no" onclick="closePage()">NO</button>
         </div>
     </div>
@@ -197,17 +197,17 @@
         </div>
         <div class="control-panel">
             <div class="input-group">
-                <label>PILIH MINDSET (STRATEGI RONDE INI):</label>
+                <label>Choose Your Strategy!:</label>
                 <select id="g1-mindset">
-                    <option value="">-- Pilih --</option>
-                    <option value="AGGRESSIVE">AGGRESSIVE (Maju 20%, Risiko 25%)</option>
-                    <option value="MODERATE">MODERATE (Maju 10%, Risiko 5%)</option>
-                    <option value="PASSIVE">PASSIVE (Maju 2.5%, Risiko 0.5%)</option>
-                    <option value="WAIT">WAIT (Diam 0%, Risiko 0%)</option>
+                    <option value="">-- Choose --</option>
+                    <option value="AGGRESSIVE">Aggresive</option>
+                    <option value="MODERATE">Moderate</option>
+                    <option value="PASSIVE">Passive</option>
+                    <option value="WAIT">Wait</option>
                 </select>
             </div>
             <button class="btn-action" onclick="playG1()">NEXT TURN ➡️</button>
-            <div class="game-log" id="g1-log">Pilih mindset untuk melangkah menuju garis finis.</div>
+            <div class="game-log" id="g1-log">Choose Your Strategy to the Finish Line!</div>
         </div>
     </div>
 
@@ -216,22 +216,22 @@
         <div class="arena">
             <div class="biscuit-container">
                 <div class="biscuit">☂️</div>
-                <div class="wetness-indicator">Kondisi Permen: <span id="g2-wetness-txt" style="color: #ff3b30;">Dry</span></div>
+                <div class="wetness-indicator">Condition: <span id="g2-wetness-txt" style="color: #ff3b30;">Dry</span></div>
             </div>
         </div>
         <div class="control-panel">
             <div class="input-group">
-                <label>PILIH TINDAKAN PERMEN:</label>
+                <label>Choose Your Strategy!:</label>
                 <select id="g2-action">
-                    <option value="">-- Pilih --</option>
-                    <option value="SNAP">SNAP (Progres 20%, Risiko tinggi tergantung kebasahan)</option>
-                    <option value="PICK">PICK (Progres 10%, Risiko sedang)</option>
-                    <option value="LICK">LICK (Progres 1%, Risiko 0% kecuali Basah Total, Menaikkan Kebasahan)</option>
-                    <option value="WAIT">WAIT (Diam 0%, Menurunkan Kebasahan)</option>
+                    <option value="">-- Choose --</option>
+                    <option value="SNAP">Snap</option>
+                    <option value="PICK">Pick</option>
+                    <option value="LICK">Lick</option>
+                    <option value="WAIT">Wait</option>
                 </select>
             </div>
-            <button class="btn-action" onclick="playG2()">NEXT TURN ➡️</button>
-            <div class="game-log" id="g2-log">Gunakan air liur (LICK) untuk membasahi permen agar memotong (SNAP/PICK) menjadi lebih aman!</div>
+            <button class="btn-action" onclick="playG2()">Next Turn ➡️</button>
+            <div class="game-log" id="g2-log">Use LICK to wet the candy to make cutting (SNAP/PICK) safer!</div>
         </div>
     </div>
 
@@ -242,16 +242,16 @@
         </div>
         <div class="control-panel">
             <div class="input-group">
-                <label>PILIH JALUR LOMPATAN ATAU MENUNGGU MUSUH:</label>
+                <label>Choose your Jump Path or Wait for the Enemy!:</label>
                 <select id="g3-choice">
-                    <option value="">-- Pilih --</option>
-                    <option value="Left">Lompat Kaca Kiri</option>
-                    <option value="Right">Lompat Kaca Kanan</option>
-                    <option value="Wait">Wait (Suruh pemain depan maju menebak)</option>
+                    <option value="">-- Choose --</option>
+                    <option value="Left">Left</option>
+                    <option value="Right">Right</option>
+                    <option value="Wait">Wait</option>
                 </select>
             </div>
-            <button class="btn-action" onclick="playG3()">NEXT TURN ➡️</button>
-            <div class="game-log" id="g3-log">Gunakan opsi 'Wait' untuk mengorbankan sisa pemain AI di depanmu memicu kaca tipis!</div>
+            <button class="btn-action" onclick="playG3()">Next Turn ➡️</button>
+            <div class="game-log" id="g3-log">Use the 'Wait' option to sacrifice the remaining AI players in front of you triggering the thin glass!</div>
         </div>
     </div>
 
@@ -259,15 +259,15 @@
         <h2 class="game-title">Game 4: Russian Roulette</h2>
         <div class="arena" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
             <div style="font-size: 5rem; margin-bottom: 10px;">🔫</div>
-            <p style="text-align:center; color:#aaa;">Pilih nomor ruang silinder silang (1-5). Jika peluru acak komputer (1-6) mengenai nomor pilihanmu, Anda kalah. Jika tidak, Giliran musuh menembak dirinya dengan nomor yang sama!</p>
+            <p style="text-align:center; color:#aaa;">Choose a cross cylinder chamber number (1-5). If the computer's random bullet (1-6) hits your chosen number, you lose. If not, it's the enemy's turn to shoot himself with the same number!</p>
         </div>
         <div class="control-panel">
             <div class="input-group">
-                <label>PILIH NOMOR SILINDER (1 - 5):</label>
+                <label>Choose Your Cylinder Chamber Number (1 - 5):</label>
                 <input type="number" id="g4-choice" min="1" max="5" placeholder="Masukkan angka 1-5">
             </div>
-            <button class="btn-action" onclick="playG4()">TARIK PELATUK 💥</button>
-            <div class="game-log" id="g4-log">Keberuntungan murni 1 lawan 1 menghadapi maut.</div>
+            <button class="btn-action" onclick="playG4()">Pull The Trigger! 💥</button>
+            <div class="game-log" id="g4-log">Pure luck 1 on 1 against death.</div>
         </div>
     </div>
 
@@ -279,33 +279,33 @@
                 <div>VS</div>
                 <div id="g5-visual-enemy">🤖</div>
             </div>
-            <div id="g5-vs-status" style="font-size:1.1rem; font-weight:bold; color:var(--gold);">Gunting, Batu, Kertas babak penentu!</div>
+            <div id="g5-vs-status" style="font-size:1.1rem; font-weight:bold; color:var(--gold);">Rock, Paper, Scissors, the deciding round!</div>
         </div>
         <div class="control-panel">
             <div class="input-group">
-                <label>PILIH TANGAN ANDA:</label>
+                <label>Choose Your Hand:</label>
                 <select id="g5-choice">
-                    <option value="">-- Pilih --</option>
-                    <option value="ROCK">BATU ✊</option>
-                    <option value="PAPER">KERTAS ✋</option>
-                    <option value="SCISSORS">GUNTING ✌️</option>
+                    <option value="">-- Choose --</option>
+                    <option value="ROCK">Rock ✊</option>
+                    <option value="PAPER">Paper ✋</option>
+                    <option value="SCISSORS">Scissors ✌️</option>
                 </select>
             </div>
-            <button class="btn-action" onclick="playG5()">KIRIM TANGAN ✊✋✌️</button>
-            <div class="game-log" id="g5-log">Lawan musuh terakhir demi mencatatkan namamu sebagai pemenang utama.</div>
+            <button class="btn-action" onclick="playG5()">Send Your Hand</button>
+            <div class="game-log" id="g5-log">Fight the last enemy to register your name as the ultimate winner.</div>
         </div>
     </div>
 
     <div id="victory-screen" class="fullscreen-overlay">
         <div class="piggy-bank">🐷💰</div>
-        <h1 class="gold-text" style="font-size: 2.5rem; margin: 10px 0;">SELAMAT! ANDA LOLOS</h1>
-        <h2 style="color: white; font-weight: 400;">Anda memenangkan Squid Game Edisi Terakhir!</h2>
+        <h1 class="gold-text" style="font-size: 2.5rem; margin: 10px 0;">CONGRATULATIONS</h1>
+        <h2 style="color: white; font-weight: 400;">You won the Squid Game Ultimate Edition!</h2>
         <div style="background: #222; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid var(--gold);">
-            <span style="color:#aaa; font-size:1rem; text-transform:uppercase; display:block;">Hadiah Utama Tunai Ditransfer:</span>
-            <strong class="gold-text" style="font-size: 2.2rem;">Rp 465.000.000.000</strong>
+            <span style="color:#aaa; font-size:1rem; text-transform:uppercase; display:block;">This is Your Price!</span>
+            <strong class="gold-text" style="font-size: 2.2rem;">Rp465.000.000.000</strong>
         </div>
-        <p style="color: #aaa; max-width: 400px; margin-bottom: 30px;">Seluruh kompetitor lain telah gugur. Anda berhak pulang dengan kepala tegak membawa uang tunai 465 Miliar Rupiah.</p>
-        <button class="btn-choice" id="btn-yes" onclick="location.reload()" style="box-shadow: 0 0 15px var(--sg-green);">MAIN LAGI 🔄</button>
+        <p style="color: #aaa; max-width: 400px; margin-bottom: 30px;">All other competitors have been eliminated. You deserve to go home with your head held high, carrying 465 billion Rupiah in cash.</p>
+        <button class="btn-choice" id="btn-yes" onclick="location.reload()" style="box-shadow: 0 0 15px var(--sg-green);">Play Again 🔄</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -459,18 +459,18 @@
         }
 
         function triggerGameOver(reasonString, currentProgressCalculated) {
-            let message = "Anda Tereliminasi! ";
-            if(reasonString.includes("RED_LIGHT")) message += "Anda bergerak saat lampu merah!";
-            else if(reasonString.includes("TIMEOUT")) message += "Waktu Anda habis!";
-            else if(reasonString.includes("HONEYCOMB")) message += "Permen Dalgona Anda retak/rusak!";
-            else if(reasonString.includes("SHATTERED")) message += "Anda menginjak kaca tipis dan jatuh!";
-            else if(reasonString.includes("SHOT")) message += "Dor! Peluru mengenai silinder pilihan Anda!";
-            else if(reasonString.includes("RPS_LOSE")) message += "Anda kalah adu Gunting-Batu-Kertas di babak final!";
+            let message = "You're Eliminate! ";
+            if(reasonString.includes("RED_LIGHT")) message += "You move when the light is red!";
+            else if(reasonString.includes("TIMEOUT")) message += "Your time is up!";
+            else if(reasonString.includes("HONEYCOMB")) message += "Your Dalgona candy is cracked/broken!";
+            else if(reasonString.includes("SHATTERED")) message += "You step on thin glass and fall!";
+            else if(reasonString.includes("SHOT")) message += "Bang! The bullet hits the cylinder of your choice!";
+            else if(reasonString.includes("RPS_LOSE")) message += "You lost the Rock-Paper-Scissors game in the final round!";
             
             alert(message + `\n\nProgres akhir Anda: ${(currentProgressCalculated * 100).toFixed(2)}%`);
             
             periksaDanKirimSkorGlobal(currentProgressCalculated).then(() => {
-                alert("Menghidupkan kembali... Mengulang dari Game 1.");
+                alert("Relive... Start Over!");
                 location.reload(); 
             });
         }
@@ -488,13 +488,13 @@
 
         function playG1() {
             let m = document.getElementById("g1-mindset").value;
-            if(!m) { alert("Pilih mindset terlebih dahulu!"); return; }
+            if(!m) { alert("Choose your Strategy First!"); return; }
 
             let caughtChance = 0, movementPercent = 0;
-            if(m === "AGGRESSIVE") { caughtChance = 0.25; movementPercent = 20; }
-            else if(m === "MODERATE") { caughtChance = 0.05; movementPercent = 10; }
-            else if(m === "PASSIVE") { caughtChance = 0.005; movementPercent = 2.5; }
-            else if(m === "WAIT") { caughtChance = 0; movementPercent = 0; }
+            if(m === "Aggresive") { caughtChance = 0.25; movementPercent = 20; }
+            else if(m === "Moderate") { caughtChance = 0.05; movementPercent = 10; }
+            else if(m === "Passive") { caughtChance = 0.005; movementPercent = 2.5; }
+            else if(m === "Wait") { caughtChance = 0; movementPercent = 0; }
 
             let currentVisualProgress = progressPercent;
 
@@ -517,13 +517,13 @@
             document.getElementById("player-shape-g1").style.bottom = (5 + (progressPercent * 80)) + "%";
 
             if(progressPercent >= 1) {
-                alert(`Kerja bagus! Anda lolos Game Pertama. Sisa pemain: ${playersRemaining}. Bersiap untuk Game 2.`);
+                alert(`Good job! You passed the first game. The remaining players: ${playersRemaining}. Prepare for te Game 2.`);
                 switchWindow("game2-window");
                 resetG2();
                 return;
             }
 
-            document.getElementById("g1-log").textContent = `Aman! Pergerakan +${movementPercent}%. Musuh mati ${nonPlayerDeaths} orang. Terus melangkah!`;
+            document.getElementById("g1-log").textContent = `Safe! Movement +${movementPercent}%. The enemy dies ${nonPlayerDeaths} people. Keep Going!`;
         }
 
         // =====================================================================
@@ -545,21 +545,21 @@
 
             let progressIncrement = 0, failureChance = 0;
 
-            if(act === "SNAP") {
+            if(act === "Snap") {
                 progressIncrement = 20;
                 if(g2Wetness === "Dry") failureChance = 0.5;
                 else if(g2Wetness === "Moist" || g2Wetness === "Soggy") failureChance = 0.2;
                 else if(g2Wetness === "Wet") failureChance = 1;
-            } else if(act === "PICK") {
+            } else if(act === "Pick") {
                 progressIncrement = 10;
                 if(g2Wetness === "Dry") failureChance = 0.4;
                 else if(g2Wetness === "Moist" || g2Wetness === "Soggy") failureChance = 0.02;
                 else if(g2Wetness === "Wet") failureChance = 0.25;
-            } else if(act === "LICK") {
+            } else if(act === "Lick") {
                 progressIncrement = 1;
                 if(g2Wetness === "Wet") failureChance = 1;
                 else failureChance = 0;
-            } else if(act === "WAIT") {
+            } else if(act === "Wait") {
                 progressIncrement = 0; failureChance = 0;
             }
 
@@ -573,7 +573,7 @@
             progressPercent += (progressIncrement / 100);
             if(progressPercent > 1) progressPercent = 1;
 
-            if(act === "LICK") {
+            if(act === "Lick") {
                 if(g2Wetness === "Dry") g2Wetness = "Moist";
                 else if(g2Wetness === "Moist") g2Wetness = "Soggy";
                 else if(g2Wetness === "Soggy" || g2Wetness === "Wet") g2Wetness = "Wet";
@@ -597,13 +597,13 @@
             globalUpdateUI(0.20 + (progressPercent * 0.20));
 
             if(progressPercent >= 1) {
-                alert(`Luar biasa! Cetakan utuh sempurna. Sisa pemain: ${playersRemaining}. Masuk ke Game 3.`);
+                alert(`Amazing! The candy is perfectly intact. The remaining players: ${playersRemaining}. Entering the Game 3.`);
                 switchWindow("game3-window");
                 resetG3();
                 return;
             }
 
-            document.getElementById("g2-log").textContent = `Selamat! Cetakan tidak retak. Jarak bertambah +${progressIncrement}%. ${nonPlayerDeaths} musuh ditembak mati.`;
+            document.getElementById("g2-log").textContent = `Happy! The mold is not cracked. Distance increases +${progressIncrement}%. ${nonPlayerDeaths} the enemy was shot dead.`;
         }
 
         // =====================================================================
@@ -626,7 +626,7 @@
             renderG3Bridge();
             globalUpdateUI(0.40);
             document.getElementById("g3-choice").value = "";
-            document.getElementById("g3-log").textContent = "Jembatan kaca siap. Pilih langkah kiri/kanan atau tunggu!";
+            document.getElementById("g3-log").textContent = "The glass bridge is ready. Choose left/right steps or wait!";
         }
 
         function renderG3Bridge() {
@@ -658,7 +658,7 @@
 
         function playG3() {
             let choice = document.getElementById("g3-choice").value;
-            if(!choice) { alert("Tentukan pilihan langkah!"); return; }
+            if(!choice) { alert("Make your choice of steps!"); return; }
 
             let currentEnemyJump = enemyJumpProgress + 1;
             let currentPlayerJump = playerJumpProgress + 1;
@@ -667,9 +667,9 @@
             if(choice === "Left" || choice === "Right") {
                 if(currentPlayerJump > 6) {
                     playersRemaining = Math.floor(playersRemaining / 2);
-                    alert(`Kemenangan! Anda berhasil menyeberang. Sisa pemain: ${playersRemaining}. Lanjut ke Game 4.`);
+                    alert(`Victory! You successfully crossed. Remaining players: ${playersRemaining}. Move to the Game 4.`);
                     switchWindow("game4-window");
-                    document.getElementById("g4-log").textContent = "Pilih angka silinder aman Anda.";
+                    document.getElementById("g4-log").textContent = "Choose your safe cylinder number.";
                     globalUpdateUI(0.60);
                     return;
                 }
@@ -700,7 +700,7 @@
 
             } else if(choice === "Wait") {
                 if(currentEnemyJump > 6) {
-                    alert("Pemain di depan sudah membuka semua kaca!");
+                    alert("The player in front has opened all the windows!");
                     return;
                 }
                 let idx = currentEnemyJump - 1;
@@ -736,7 +736,7 @@
         function playG4() {
             let choiceVal = parseInt(document.getElementById("g4-choice").value);
             if(isNaN(choiceVal) || choiceVal < 1 || choiceVal > 5) {
-                alert("Masukkan angka antara 1 sampai 5!");
+                alert("Enter a number between 1 and 5!");
                 return;
             }
 
@@ -749,13 +749,13 @@
             let enemyRoll = Math.floor(Math.random() * 6) + 1;
             if(enemyRoll === choiceVal) {
                 playersRemaining = Math.round(playersRemaining / 2);
-                alert(`Musuh memicu peluru aktif! Anda menang! Sisa pemain: ${playersRemaining}. Bersiap untuk BABAK FINAL!`);
+                alert(`The enemy triggers the live bullet! You win! The remaining players: ${playersRemaining}. Get ready for the FINAL ROUND!`);
                 switchWindow("game5-window");
                 globalUpdateUI(0.80);
                 return;
             }
 
-            document.getElementById("g4-log").textContent = `Klik! Senjata kosong (Angka keluar: ${playerRoll}). Musuh juga aman (${enemyRoll}). Tarik kembali pelatuknya!`;
+            document.getElementById("g4-log").textContent = `Click! Empty weapons (Figures come out:${playerRoll}). The enemy is also safe(${enemyRoll}). Pull the trigger again!`;
         }
 
         // =====================================================================
@@ -771,19 +771,19 @@
             else if(enemyRoll === 2) eChoice = "PAPER";
             else if(enemyRoll === 3) eChoice = "SCISSORS";
 
-            const hands = {"ROCK":"✊", "PAPER":"✋", "SCISSORS":"✌️"};
+            const hands = {"Rock":"✊", "Paper":"✋", "Scissors":"✌️"};
             document.getElementById("g5-visual-player").textContent = hands[pChoice];
             document.getElementById("g5-visual-enemy").textContent = hands[eChoice];
 
             if(pChoice === eChoice) {
-                document.getElementById("g5-vs-status").textContent = `Seri! Sama-sama mengeluarkan ${pChoice}. Ulangi!`;
+                document.getElementById("g5-vs-status").textContent = `Series! Both of them issued ${pChoice}. Restart!`;
                 return;
             }
 
             if (
-                (pChoice === "ROCK" && eChoice === "SCISSORS") ||
-                (pChoice === "PAPER" && eChoice === "ROCK") ||
-                (pChoice === "SCISSORS" && eChoice === "PAPER")
+                (pChoice === "Rock" && eChoice === "Scissors") ||
+                (pChoice === "Paper" && eChoice === "Rock") ||
+                (pChoice === "Scissors" && eChoice === "Paper")
             ) {
                 playersRemaining = Math.floor(playersRemaining / 2);
                 globalUpdateUI(1.00);
