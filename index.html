@@ -183,8 +183,8 @@
                 <label for="player-name-input">Your Name:</label>
                 <input type="text" id="player-name-input" placeholder="Masukkan nama..." autocomplete="off">
             </div>
-            <button class="btn-choice" id="btn-yes" oncLick="initWholeGame()">YES</button>
-            <button class="btn-choice" id="btn-no" oncLick="closePage()">NO</button>
+            <button class="btn-choice" id="btn-yes" onclick="initWholeGame()">YES</button>
+            <button class="btn-choice" id="btn-no" onclick="closePage()">NO</button>
         </div>
     </div>
 
@@ -206,7 +206,7 @@
                     <option value="Wait">Wait</option>
                 </select>
             </div>
-            <button class="btn-action" oncLick="playG1()">NEXT TURN ➡️</button>
+            <button class="btn-action" onclick="playG1()">NEXT TURN ➡️</button>
             <div class="game-log" id="g1-log">Choose Your Strategy to the Finish Line!</div>
         </div>
     </div>
@@ -230,7 +230,7 @@
                     <option value="Wait">Wait</option>
                 </select>
             </div>
-            <button class="btn-action" oncLick="playG2()">Next Turn ➡️</button>
+            <button class="btn-action" onclick="playG2()">Next Turn ➡️</button>
             <div class="game-log" id="g2-log">Use Lick to wet the candy to make cutting (Snap/Pick) safer!</div>
         </div>
     </div>
@@ -250,7 +250,7 @@
                     <option value="Wait">Wait</option>
                 </select>
             </div>
-            <button class="btn-action" oncLick="playG3()">Next Turn ➡️</button>
+            <button class="btn-action" onclick="playG3()">Next Turn ➡️</button>
             <div class="game-log" id="g3-log">Use the 'Wait' option to sacrifice the remaining AI players in front of you triggering the thin glass!</div>
         </div>
     </div>
@@ -266,7 +266,7 @@
                 <label>Choose Your Cylinder Chamber Number (1 - 5):</label>
                 <input type="number" id="g4-choice" min="1" max="5" placeholder="Masukkan angka 1-5">
             </div>
-            <button class="btn-action" oncLick="playG4()">Pull The Trigger! 💥</button>
+            <button class="btn-action" onclick="playG4()">Pull The Trigger! 💥</button>
             <div class="game-log" id="g4-log">Pure luck 1 on 1 against death.</div>
         </div>
     </div>
@@ -291,7 +291,7 @@
                     <option value="Scissors">Scissors ✌️</option>
                 </select>
             </div>
-            <button class="btn-action" oncLick="playG5()">Send Your Hand</button>
+            <button class="btn-action" onclick="playG5()">Send Your Hand</button>
             <div class="game-log" id="g5-log">Fight the last enemy to register your name as the ultimate winner.</div>
         </div>
     </div>
@@ -305,7 +305,7 @@
             <strong class="gold-text" style="font-size: 2.2rem;">Rp465.000.000.000</strong>
         </div>
         <p style="color: #aaa; max-width: 400px; margin-bottom: 30px;">All other competitors have been eliminated. You deserve to go home with your head held high, carrying 465 billion Rupiah in cash.</p>
-        <button class="btn-choice" id="btn-yes" oncLick="location.reload()" style="box-shadow: 0 0 15px var(--sg-green);">Play Again 🔄</button>
+        <button class="btn-choice" id="btn-yes" onclick="location.reload()" style="box-shadow: 0 0 15px var(--sg-green);">Play Again 🔄</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -348,12 +348,13 @@
         });
 
         // =====================================================================
-        // LEADERBOARD TOP 10 (GANTI DARI VERSI TOP 1 SEBELUMNYA)
+        // LEADERBOARD TOP 10
         // =====================================================================
         async function ambilTopSkorGlobal() {
             const listEl = document.getElementById("leaderboard-list");
             try {
-                const { data, error } = aWait supabaseClient
+                // FIX: "aWait" -> "await"
+                const { data, error } = await supabaseClient
                     .from('leaderboard_squidgame')
                     .select('name, score')
                     .order('score', { ascending: false })
@@ -404,7 +405,8 @@
             let masukTop10 = cachedLeaderboard.length < 10 || totalSkorBobot > lowestInTop10;
 
             try {
-                const { error } = aWait supabaseClient
+                // FIX: "aWait" -> "await"
+                const { error } = await supabaseClient
                     .from('leaderboard_squidgame')
                     .insert([{ name: currentPlayerName, score: totalSkorBobot }]);
 
@@ -414,7 +416,8 @@
                     alert(`🏆 CONGRATULATIONS! ${currentPlayerName} has successfully entered the TOP 10 LEADERBOARD with a score of ${totalSkorBobot.toFixed(2)}%!`);
                 }
 
-                aWait ambilTopSkorGlobal(); // Refresh tampilan leaderboard top 10
+                // FIX: "aWait" -> "await"
+                await ambilTopSkorGlobal(); // Refresh tampilan leaderboard top 10
             } catch (err) {
                 console.error("Failed to send new score data:", err.message);
             }
@@ -491,7 +494,8 @@
             if(!m) { alert("Choose your Strategy First!"); return; }
 
             let caughtChance = 0, movementPercent = 0;
-            if(m === "Aggresive") { caughtChance = 0.25; movementPercent = 20; }
+            // FIX: "Aggresive" -> "Aggressive" agar cocok dengan value di <option>
+            if(m === "Aggressive") { caughtChance = 0.25; movementPercent = 20; }
             else if(m === "Moderate") { caughtChance = 0.05; movementPercent = 10; }
             else if(m === "Passive") { caughtChance = 0.005; movementPercent = 2.5; }
             else if(m === "Wait") { caughtChance = 0; movementPercent = 0; }
@@ -727,7 +731,7 @@
             if(playersRemaining < 1) playersRemaining = 1;
 
             globalUpdateUI(0.40 + (progressPercent * 0.20));
-            document.getElementById("g3-log").textContent = `Anda memilih: ${choice}. Sisa waktu: ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`;
+            document.getElementById("g3-log").textContent = `You Choose: ${choice}. Time Left: ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`;
         }
 
         // =====================================================================
@@ -755,7 +759,7 @@
                 return;
             }
 
-            document.getElementById("g4-log").textContent = `CLick! Empty weapons (Figures come out:${playerRoll}). The enemy is also safe(${enemyRoll}). Pull the trigger again!`;
+            document.getElementById("g4-log").textContent = `Click! Empty weapons (Figures come out:${playerRoll}). The enemy is also safe(${enemyRoll}). Pull the trigger again!`;
         }
 
         // =====================================================================
@@ -763,7 +767,7 @@
         // =====================================================================
         function playG5() {
             let pChoice = document.getElementById("g5-choice").value;
-            if(!pChoice) { alert("Pilih tangan Anda!"); return; }
+            if(!pChoice) { alert("Choose your Hand!"); return; }
 
             let enemyRoll = Math.floor(Math.random() * 3) + 1;
             let eChoice = "";
