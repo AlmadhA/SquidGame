@@ -157,12 +157,12 @@
     <div id="welcome-overlay" class="fullscreen-overlay">
         <div class="welcome-box">
             <h1>SQUID GAME</h1>
-            <p>Apakah anda sudah siap mempertaruhkan segalanya?</p>
+            <p>Are You Ready?</p>
             <div class="input-group" style="margin-bottom: 20px; text-align: left;">
-                <label for="player-name-input">NAMA ANDA:</label>
+                <label for="player-name-input">Your Name:</label>
                 <input type="text" id="player-name-input" placeholder="Masukkan nama..." autocomplete="off">
             </div>
-            <button class="btn-choice" id="btn-yes" onclick="initWholeGame()">YES, SAYA SIAP</button>
+            <button class="btn-choice" id="btn-yes" onclick="initWholeGame()">YES</button>
             <button class="btn-choice" id="btn-no" onclick="closePage()">NO</button>
         </div>
     </div>
@@ -293,7 +293,7 @@
         // SUPABASE CREDENTIALS DIRECT CONNECTION
         const SUPABASE_URL = "https://eqfimiakzjmsighcptyk.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJip3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZmltaWFremptc2lnaGNwdHlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwODg5NDAsImV4cCI6MjA5NzY2NDk0MH0.vDuenbu4wymeAEEC731forj9HKYgeNTuG5_DTiLfZ0U";
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // LEADERBOARD INDEPENDENT VARIABLES
         let currentPlayerName = "Anonim";
@@ -327,7 +327,7 @@
 
         async function ambilTopSkorGlobal() {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('leaderboard_squidgame')
                     .select('name, score')
                     .order('score', { ascending: false })
@@ -355,7 +355,7 @@
             if (totalSkorBobot > globalTopScore) {
                 alert(`🏆 REKOR BARU! ${currentPlayerName} berhasil memecahkan rekor tertinggi global baru dengan skor ${totalSkorBobot.toFixed(2)}%!`);
                 try {
-                    const { error } = await supabase
+                    const { error } = await supabaseClient
                         .from('leaderboard_squidgame')
                         .insert([{ name: currentPlayerName, score: totalSkorBobot }]);
                     
