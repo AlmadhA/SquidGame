@@ -25,6 +25,25 @@
             overflow: hidden;
         }
 
+        /* LIVE GLOBAL LEADERBOARD (POJOK KANAN ATAS) */
+        .global-top-score {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 1px solid var(--gold);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            z-index: 200;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+            pointer-events: none;
+        }
+        .global-top-score span {
+            color: var(--gold);
+            font-weight: bold;
+        }
+
         /* STATS MASTER BAR */
         .stats-container {
             display: flex; justify-content: space-between; width: 100%; max-width: 600px;
@@ -60,7 +79,7 @@
         }
         .input-group { display: flex; flex-direction: column; gap: 5px; }
         .input-group label { font-size: 0.85rem; color: #aaa; font-weight: bold;}
-        select, input[type="number"] {
+        select, input[type="number"], input[type="text"] {
             padding: 10px; background: #2a2a2a; color: white;
             border: 1px solid #444; border-radius: 5px; font-size: 1rem; outline: none;
         }
@@ -123,7 +142,10 @@
 </head>
 <body>
 
-    <!-- MASTER STATS BAR -->
+    <div class="global-top-score">
+        🏆 Top Score Global: <span id="top-username">Loading...</span> (<span id="top-val">0.00%</span>)
+    </div>
+
     <div id="master-stats" style="display: none;">
         <div class="stats-container">
             <div class="stat-box"><span>Pemain Sisa</span><strong id="txt-players">464</strong></div>
@@ -132,17 +154,19 @@
         </div>
     </div>
 
-    <!-- SCREEN 1: WELCOME SCREEN -->
     <div id="welcome-overlay" class="fullscreen-overlay">
         <div class="welcome-box">
             <h1>SQUID GAME</h1>
             <p>Apakah anda sudah siap mempertaruhkan segalanya?</p>
-            <button class="btn-choice" id="btn-yes" onclick="initWholeGame()">YES</button>
+            <div class="input-group" style="margin-bottom: 20px; text-align: left;">
+                <label for="player-name-input">NAMA IDENTITAS ANDA:</label>
+                <input type="text" id="player-name-input" placeholder="Masukkan nama panggilan..." autocomplete="off">
+            </div>
+            <button class="btn-choice" id="btn-yes" onclick="initWholeGame()">YES, SAYA SIAP</button>
             <button class="btn-choice" id="btn-no" onclick="closePage()">NO</button>
         </div>
     </div>
 
-    <!-- GAME 1: RED LIGHT GREEN LIGHT -->
     <div id="game1-window" class="game-window">
         <h2 class="game-title">Game 1: Red Light, Green Light</h2>
         <div class="arena" id="g1-arena">
@@ -155,10 +179,10 @@
                 <label>PILIH MINDSET (STRATEGI RONDE INI):</label>
                 <select id="g1-mindset">
                     <option value="">-- Pilih --</option>
-                    <option value="AGGRESSIVE">AGGRESSIVE</option>
-                    <option value="MODERATE">MODERATE</option>
-                    <option value="PASSIVE">PASSIVE</option>
-                    <option value="WAIT">WAIT</option>
+                    <option value="AGGRESSIVE">AGGRESSIVE (Maju 20%, Risiko 25%)</option>
+                    <option value="MODERATE">MODERATE (Maju 10%, Risiko 5%)</option>
+                    <option value="PASSIVE">PASSIVE (Maju 2.5%, Risiko 0.5%)</option>
+                    <option value="WAIT">WAIT (Diam 0%, Risiko 0%)</option>
                 </select>
             </div>
             <button class="btn-action" onclick="playG1()">NEXT TURN ➡️</button>
@@ -166,7 +190,6 @@
         </div>
     </div>
 
-    <!-- GAME 2: SUGAR HONEYCOMBS -->
     <div id="game2-window" class="game-window">
         <h2 class="game-title">Game 2: Sugar Honeycombs</h2>
         <div class="arena">
@@ -180,10 +203,10 @@
                 <label>PILIH TINDAKAN PERMEN:</label>
                 <select id="g2-action">
                     <option value="">-- Pilih --</option>
-                    <option value="SNAP">SNAP</option>
-                    <option value="PICK">PICK</option>
-                    <option value="LICK">LICK</option>
-                    <option value="WAIT">WAIT</option>
+                    <option value="SNAP">SNAP (Progres 20%, Risiko tinggi tergantung kebasahan)</option>
+                    <option value="PICK">PICK (Progres 10%, Risiko sedang)</option>
+                    <option value="LICK">LICK (Progres 1%, Risiko 0% kecuali Basah Total, Menaikkan Kebasahan)</option>
+                    <option value="WAIT">WAIT (Diam 0%, Menurunkan Kebasahan)</option>
                 </select>
             </div>
             <button class="btn-action" onclick="playG2()">NEXT TURN ➡️</button>
@@ -191,22 +214,20 @@
         </div>
     </div>
 
-    <!-- GAME 3: HOPSCOTCH -->
     <div id="game3-window" class="game-window">
         <h2 class="game-title">Game 3: Glass Hopscotch</h2>
         <div class="arena">
             <div class="glass-bridge" id="g3-bridge">
-                <!-- Baris kaca akan di-generate otomatis via JS -->
-            </div>
+                </div>
         </div>
         <div class="control-panel">
             <div class="input-group">
                 <label>PILIH JALUR LOMPATAN ATAU MENUNGGU MUSUH:</label>
                 <select id="g3-choice">
                     <option value="">-- Pilih --</option>
-                    <option value="Left">Left</option>
-                    <option value="Right">Right</option>
-                    <option value="Wait">Wait</option>
+                    <option value="Left">Lompat Kaca Kiri</option>
+                    <option value="Right">Lompat Kaca Kanan</option>
+                    <option value="Wait">Wait (Suruh pemain depan maju menebak)</option>
                 </select>
             </div>
             <button class="btn-action" onclick="playG3()">NEXT TURN ➡️</button>
@@ -214,7 +235,6 @@
         </div>
     </div>
 
-    <!-- GAME 4: RUSSIAN ROULETTE -->
     <div id="game4-window" class="game-window">
         <h2 class="game-title">Game 4: Russian Roulette</h2>
         <div class="arena" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
@@ -231,7 +251,6 @@
         </div>
     </div>
 
-    <!-- GAME 5: ROCK PAPER SCISSORS -->
     <div id="game5-window" class="game-window">
         <h2 class="game-title">Final Game: Rock Paper Scissors</h2>
         <div class="arena" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap: 20px;">
@@ -257,7 +276,6 @@
         </div>
     </div>
 
-    <!-- GRAND VICTORY OVERLAY -->
     <div id="victory-screen" class="fullscreen-overlay">
         <div class="piggy-bank">🐷💰</div>
         <h1 class="gold-text" style="font-size: 2.5rem; margin: 10px 0;">SELAMAT! ANDA LOLOS</h1>
@@ -270,8 +288,20 @@
         <button class="btn-choice" id="btn-yes" onclick="location.reload()" style="box-shadow: 0 0 15px var(--sg-green);">MAIN LAGI 🔄</button>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
-        // MASTER VARIABLES
+        // SUPABASE CREDENTIALS DIRECT CONNECTION
+        const SUPABASE_URL = "https://eqfimiakzjmsighcptyk.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJip3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZmltaWFremptc2lnaGNwdHlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwODg5NDAsImV4cCI6MjA5NzY2NDk0MH0.vDuenbu4wymeAEEC731forj9HKYgeNTuG5_DTiLfZ0U";
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // LEADERBOARD INDEPENDENT VARIABLES
+        let currentPlayerName = "Anonim";
+        let globalTopScore = 0.0;
+        let globalTopName = "Belum Ada";
+
+        // MASTER COMPONENT GAME LOGIC
         let playersRemaining = 464;
         let timeLeft = 300;
         let progressPercent = 0.0;
@@ -291,6 +321,53 @@
         const txtTimer = document.getElementById("txt-timer");
         const txtProgress = document.getElementById("txt-progress");
 
+        // MEMUAT DATA TOP SKOR KETIKA HALAMAN PERTAMA KALI DIBUKA
+        window.addEventListener("DOMContentLoaded", () => {
+            ambilTopSkorGlobal();
+        });
+
+        async function ambilTopSkorGlobal() {
+            try {
+                const { data, error } = await supabase
+                    .from('leaderboard_squid')
+                    .select('name, score')
+                    .order('score', { ascending: false })
+                    .limit(1);
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    globalTopName = data[0].nama;
+                    globalTopScore = parseFloat(data[0].skor);
+                    document.getElementById("top-username").textContent = globalTopName;
+                    document.getElementById("top-val").textContent = globalTopScore.toFixed(2) + "%";
+                } else {
+                    document.getElementById("top-username").textContent = "Belum Ada";
+                    document.getElementById("top-val").textContent = "0.00%";
+                }
+            } catch (err) {
+                console.error("Gagal menarik data Top Score:", err.message);
+                document.getElementById("top-username").textContent = "Offline Error";
+            }
+        }
+
+        async function periksaDanKirimSkorGlobal(skorAktivitas) {
+            let totalSkorBobot = skorAktivitas * 100;
+            if (totalSkorBobot > globalTopScore) {
+                alert(`🏆 REKOR BARU! ${currentPlayerName} berhasil memecahkan rekor tertinggi global baru dengan skor ${totalSkorBobot.toFixed(2)}%!`);
+                try {
+                    const { error } = await supabase
+                        .from('leaderboard_squidgame')
+                        .insert([{ nama: currentPlayerName, skor: totalSkorBobot }]);
+                    
+                    if (error) throw error;
+                    ambilTopSkorGlobal(); // Refresh tampilan papan top skor
+                } catch (err) {
+                    console.error("Gagal mengirim data skor baru:", err.message);
+                }
+            }
+        }
+
         function closePage() {
             document.getElementById("welcome-overlay").innerHTML = `
                 <div class="welcome-box">
@@ -300,7 +377,14 @@
         }
 
         function initWholeGame() {
-            document.getElementById("welcome-overlay").style.display = "none";
+            let nameInput = document.getElementById("player-name-input").value.trim();
+            if(!nameInput) {
+                alert("Harap masukkan Nama Identitas Anda sebelum masuk arena!");
+                return;
+            }
+            currentPlayerName = nameInput;
+
+            document.getElementById("welcome-overlay").style.style.display = "none";
             document.getElementById("master-stats").style.display = "block";
             
             playersRemaining = 464;
@@ -322,8 +406,8 @@
             txtTimer.textContent = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
         }
 
-        // FUNGSI PENGGANTI ELIMINASI LANGSUNG (TANPA BSOD)
-        function triggerGameOver(reasonString) {
+        // FUNGSI PENGGANTI ELIMINASI LANGSUNG (TANPA BSOD + VALIDASI REKOR GLOBAL)
+        function triggerGameOver(reasonString, currentProgressCalculated) {
             let message = "Anda Tereliminasi! ";
             if(reasonString.includes("RED_LIGHT")) message += "Anda bergerak saat lampu merah!";
             else if(reasonString.includes("TIMEOUT")) message += "Waktu Anda habis!";
@@ -332,12 +416,17 @@
             else if(reasonString.includes("SHOT")) message += "Dor! Peluru mengenai silinder pilihan Anda!";
             else if(reasonString.includes("RPS_LOSE")) message += "Anda kalah adu Gunting-Batu-Kertas di babak final!";
             
-            alert(message + "\n\nMenghidupkan kembali... Mengulang dari Game 1.");
-            initWholeGame(); // Langsung reset total dari Game 1
+            alert(message + `\n\nProgres akhir Anda: ${(currentProgressCalculated * 100).toFixed(2)}%`);
+            
+            // Periksa & Kirim ke Supabase jika memecahkan rekor global sebelum reset
+            periksaDanKirimSkorGlobal(currentProgressCalculated).then(() => {
+                alert("Menghidupkan kembali... Mengulang dari Game 1.");
+                location.reload(); // Hard reset untuk kestabilan state game
+            });
         }
 
         // =====================================================================
-        // LOGIKA GAME 1: RED LIGHT GREEN LIGHT
+        // LOGIKA GAME 1: RED LIGHT GREEN LIGHT (Skor Kontribusi: 0.0 - 0.20)
         // =====================================================================
         function resetG1() {
             timeLeft = 300;
@@ -357,8 +446,10 @@
             else if(m === "PASSIVE") { caughtChance = 0.005; movementPercent = 2.5; }
             else if(m === "WAIT") { caughtChance = 0; movementPercent = 0; }
 
+            let currentVisualProgress = progressPercent;
+
             if(Math.random() < caughtChance) {
-                triggerGameOver("GAME1_CAUGHT_RED_LIGHT");
+                triggerGameOver("GAME1_CAUGHT_RED_LIGHT", (currentVisualProgress * 0.20));
                 return;
             }
 
@@ -366,13 +457,13 @@
             if(progressPercent > 1) progressPercent = 1;
 
             timeLeft -= (Math.floor(Math.random() * 21) + 20); 
-            if(timeLeft <= 0) { timeLeft = 0; globalUpdateUI(progressPercent); triggerGameOver("GAME1_TIMER_TIMEOUT"); return; }
+            if(timeLeft <= 0) { timeLeft = 0; globalUpdateUI(progressPercent); triggerGameOver("GAME1_TIMER_TIMEOUT", (currentVisualProgress * 0.20)); return; }
 
             let nonPlayerDeaths = Math.floor(Math.floor(Math.random() * (playersRemaining + 1)) * 0.2);
             playersRemaining -= nonPlayerDeaths;
             if(playersRemaining < 2) playersRemaining = 2;
 
-            globalUpdateUI(progressPercent);
+            globalUpdateUI(progressPercent * 0.20);
             document.getElementById("player-shape-g1").style.bottom = (5 + (progressPercent * 80)) + "%";
 
             if(progressPercent >= 1) {
@@ -386,7 +477,7 @@
         }
 
         // =====================================================================
-        // LOGIKA GAME 2: SUGAR HONEYCOMBS
+        // LOGIKA GAME 2: SUGAR HONEYCOMBS (Skor Kontribusi: 0.20 - 0.40)
         // =====================================================================
         function resetG2() {
             timeLeft = 300;
@@ -395,7 +486,7 @@
             document.getElementById("g2-wetness-txt").textContent = g2Wetness;
             document.getElementById("g2-wetness-txt").style.color = "#ff3b30";
             document.getElementById("g2-action").value = "";
-            globalUpdateUI(progressPercent);
+            globalUpdateUI(0.20);
         }
 
         function playG2() {
@@ -422,8 +513,10 @@
                 progressIncrement = 0; failureChance = 0;
             }
 
+            let calculatedTotalProgress = 0.20 + (progressPercent * 0.20);
+
             if(Math.random() < failureChance) {
-                triggerGameOver("GAME2_HONEYCOMB_BISCUIT_BROKE");
+                triggerGameOver("GAME2_HONEYCOMB_BISCUIT_BROKE", calculatedTotalProgress);
                 return;
             }
 
@@ -445,13 +538,13 @@
             document.getElementById("g2-wetness-txt").style.color = wetColors[g2Wetness];
 
             timeLeft -= (Math.floor(Math.random() * 6) + 10); 
-            if(timeLeft <= 0) { timeLeft = 0; globalUpdateUI(progressPercent); triggerGameOver("GAME2_TIMER_TIMEOUT"); return; }
+            if(timeLeft <= 0) { timeLeft = 0; globalUpdateUI(calculatedTotalProgress); triggerGameOver("GAME2_TIMER_TIMEOUT", calculatedTotalProgress); return; }
 
             let nonPlayerDeaths = Math.floor(Math.floor(Math.random() * (playersRemaining + 1)) * 0.05);
             playersRemaining -= nonPlayerDeaths;
             if(playersRemaining < 2) playersRemaining = 2;
 
-            globalUpdateUI(progressPercent);
+            globalUpdateUI(0.20 + (progressPercent * 0.20));
 
             if(progressPercent >= 1) {
                 alert(`Luar biasa! Cetakan utuh sempurna. Sisa pemain: ${playersRemaining}. Masuk ke Game 3.`);
@@ -464,7 +557,7 @@
         }
 
         // =====================================================================
-        // LOGIKA GAME 3: HOPSCOTCH (GLASS BRIDGE)
+        // LOGIKA GAME 3: HOPSCOTCH (Skor Kontribusi: 0.40 - 0.60)
         // =====================================================================
         function resetG3() {
             timeLeft = 300;
@@ -481,7 +574,7 @@
             }
 
             renderG3Bridge();
-            globalUpdateUI(progressPercent);
+            globalUpdateUI(0.40);
             document.getElementById("g3-choice").value = "";
             document.getElementById("g3-log").textContent = "Jembatan kaca siap. Pilih langkah kiri/kanan atau tunggu!";
         }
@@ -519,6 +612,7 @@
 
             let currentEnemyJump = enemyJumpProgress + 1;
             let currentPlayerJump = playerJumpProgress + 1;
+            let calculatedTotalProgress = 0.40 + (progressPercent * 0.20);
 
             if(choice === "Left" || choice === "Right") {
                 if(currentPlayerJump > 6) {
@@ -526,7 +620,7 @@
                     alert(`Kemenangan! Anda berhasil menyeberang. Sisa pemain: ${playersRemaining}. Lanjut ke Game 4.`);
                     switchWindow("game4-window");
                     document.getElementById("g4-log").textContent = "Pilih angka silinder aman Anda.";
-                    globalUpdateUI(0);
+                    globalUpdateUI(0.60);
                     return;
                 }
 
@@ -545,12 +639,12 @@
 
                 playerJumpProgress++;
                 enemyJumpProgress = Math.min(playerJumpProgress, enemyJumpProgress + 1);
-                progressPercent += (1 / 7);
+                progressPercent += (1 / 6);
 
                 renderG3Bridge();
 
                 if(solidTile !== "Yes") {
-                    triggerGameOver("GAME3_GLASS_SHATTERED_FELL");
+                    triggerGameOver("GAME3_GLASS_SHATTERED_FELL", calculatedTotalProgress);
                     return;
                 }
 
@@ -579,15 +673,15 @@
             }
 
             timeLeft -= 25;
-            if(timeLeft <= 0) { timeLeft = 0; globalUpdateUI(progressPercent); triggerGameOver("GAME3_TIMER_TIMEOUT"); return; }
+            if(timeLeft <= 0) { timeLeft = 0; globalUpdateUI(calculatedTotalProgress); triggerGameOver("GAME3_TIMER_TIMEOUT", calculatedTotalProgress); return; }
             if(playersRemaining < 1) playersRemaining = 1;
 
-            globalUpdateUI(progressPercent);
+            globalUpdateUI(0.40 + (progressPercent * 0.20));
             document.getElementById("g3-log").textContent = `Anda memilih: ${choice}. Sisa waktu: ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`;
         }
 
         // =====================================================================
-        // LOGIKA GAME 4: RUSSIAN ROULETTE
+        // LOGIKA GAME 4: RUSSIAN ROULETTE (Skor Kontribusi: 0.60 - 0.80)
         // =====================================================================
         function playG4() {
             let choiceVal = parseInt(document.getElementById("g4-choice").value);
@@ -598,7 +692,7 @@
 
             let playerRoll = Math.floor(Math.random() * 6) + 1;
             if(playerRoll === choiceVal) {
-                triggerGameOver("GAME4_BANG_YOU_SHOT_YOURSELF");
+                triggerGameOver("GAME4_BANG_YOU_SHOT_YOURSELF", 0.65); // Kalah tembak mati dapat nilai dasar babak 4
                 return;
             }
 
@@ -607,7 +701,7 @@
                 playersRemaining = Math.round(playersRemaining / 2);
                 alert(`Musuh memicu peluru aktif! Anda menang! Sisa pemain: ${playersRemaining}. Bersiap untuk BABAK FINAL!`);
                 switchWindow("game5-window");
-                globalUpdateUI(0);
+                globalUpdateUI(0.80);
                 return;
             }
 
@@ -615,7 +709,7 @@
         }
 
         // =====================================================================
-        // LOGIKA GAME 5: ROCK PAPER SCISSORS (FINAL)
+        // LOGIKA GAME 5: ROCK PAPER SCISSORS (Skor Kontribusi: 0.80 - 1.00)
         // =====================================================================
         function playG5() {
             let pChoice = document.getElementById("g5-choice").value;
@@ -642,12 +736,15 @@
                 (pChoice === "SCISSORS" && eChoice === "PAPER")
             ) {
                 playersRemaining = Math.floor(playersRemaining / 2);
-                globalUpdateUI(1);
+                globalUpdateUI(1.00);
                 document.getElementById("master-stats").style.display = "none";
                 document.getElementById("game5-window").style.display = "none";
                 document.getElementById("victory-screen").style.display = "flex";
+                
+                // Kirim rekor kemenangan sempurna 100% ke database global
+                periksaDanKirimSkorGlobal(1.00);
             } else {
-                triggerGameOver("GAME5_FINAL_RPS_LOSE_ELIMINATED");
+                triggerGameOver("GAME5_FINAL_RPS_LOSE_ELIMINATED", 0.85); // Gugur di babak final dapat nilai apresiasi tinggi 85%
             }
         }
     </script>
