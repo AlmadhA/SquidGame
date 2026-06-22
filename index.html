@@ -183,8 +183,8 @@
                 <label for="player-name-input">Your Name:</label>
                 <input type="text" id="player-name-input" placeholder="Masukkan nama..." autocomplete="off">
             </div>
-            <button class="btn-choice" id="btn-yes" onclick="initWholeGame()">YES</button>
-            <button class="btn-choice" id="btn-no" onclick="closePage()">NO</button>
+            <button class="btn-choice" id="btn-yes" oncLick="initWholeGame()">YES</button>
+            <button class="btn-choice" id="btn-no" oncLick="closePage()">NO</button>
         </div>
     </div>
 
@@ -200,13 +200,13 @@
                 <label>Choose Your Strategy!:</label>
                 <select id="g1-mindset">
                     <option value="">-- Choose --</option>
-                    <option value="AGGRESSIVE">Aggresive</option>
-                    <option value="MODERATE">Moderate</option>
-                    <option value="PASSIVE">Passive</option>
-                    <option value="WAIT">Wait</option>
+                    <option value="Aggressive">Aggressive</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="Passive">Passive</option>
+                    <option value="Wait">Wait</option>
                 </select>
             </div>
-            <button class="btn-action" onclick="playG1()">NEXT TURN ➡️</button>
+            <button class="btn-action" oncLick="playG1()">NEXT TURN ➡️</button>
             <div class="game-log" id="g1-log">Choose Your Strategy to the Finish Line!</div>
         </div>
     </div>
@@ -224,14 +224,14 @@
                 <label>Choose Your Strategy!:</label>
                 <select id="g2-action">
                     <option value="">-- Choose --</option>
-                    <option value="SNAP">Snap</option>
-                    <option value="PICK">Pick</option>
-                    <option value="LICK">Lick</option>
-                    <option value="WAIT">Wait</option>
+                    <option value="Snap">Snap</option>
+                    <option value="Pick">Pick</option>
+                    <option value="Lick">Lick</option>
+                    <option value="Wait">Wait</option>
                 </select>
             </div>
-            <button class="btn-action" onclick="playG2()">Next Turn ➡️</button>
-            <div class="game-log" id="g2-log">Use LICK to wet the candy to make cutting (SNAP/PICK) safer!</div>
+            <button class="btn-action" oncLick="playG2()">Next Turn ➡️</button>
+            <div class="game-log" id="g2-log">Use Lick to wet the candy to make cutting (Snap/Pick) safer!</div>
         </div>
     </div>
 
@@ -250,7 +250,7 @@
                     <option value="Wait">Wait</option>
                 </select>
             </div>
-            <button class="btn-action" onclick="playG3()">Next Turn ➡️</button>
+            <button class="btn-action" oncLick="playG3()">Next Turn ➡️</button>
             <div class="game-log" id="g3-log">Use the 'Wait' option to sacrifice the remaining AI players in front of you triggering the thin glass!</div>
         </div>
     </div>
@@ -266,7 +266,7 @@
                 <label>Choose Your Cylinder Chamber Number (1 - 5):</label>
                 <input type="number" id="g4-choice" min="1" max="5" placeholder="Masukkan angka 1-5">
             </div>
-            <button class="btn-action" onclick="playG4()">Pull The Trigger! 💥</button>
+            <button class="btn-action" oncLick="playG4()">Pull The Trigger! 💥</button>
             <div class="game-log" id="g4-log">Pure luck 1 on 1 against death.</div>
         </div>
     </div>
@@ -286,12 +286,12 @@
                 <label>Choose Your Hand:</label>
                 <select id="g5-choice">
                     <option value="">-- Choose --</option>
-                    <option value="ROCK">Rock ✊</option>
-                    <option value="PAPER">Paper ✋</option>
-                    <option value="SCISSORS">Scissors ✌️</option>
+                    <option value="Rock">Rock ✊</option>
+                    <option value="Paper">Paper ✋</option>
+                    <option value="Scissors">Scissors ✌️</option>
                 </select>
             </div>
-            <button class="btn-action" onclick="playG5()">Send Your Hand</button>
+            <button class="btn-action" oncLick="playG5()">Send Your Hand</button>
             <div class="game-log" id="g5-log">Fight the last enemy to register your name as the ultimate winner.</div>
         </div>
     </div>
@@ -305,7 +305,7 @@
             <strong class="gold-text" style="font-size: 2.2rem;">Rp465.000.000.000</strong>
         </div>
         <p style="color: #aaa; max-width: 400px; margin-bottom: 30px;">All other competitors have been eliminated. You deserve to go home with your head held high, carrying 465 billion Rupiah in cash.</p>
-        <button class="btn-choice" id="btn-yes" onclick="location.reload()" style="box-shadow: 0 0 15px var(--sg-green);">Play Again 🔄</button>
+        <button class="btn-choice" id="btn-yes" oncLick="location.reload()" style="box-shadow: 0 0 15px var(--sg-green);">Play Again 🔄</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -353,7 +353,7 @@
         async function ambilTopSkorGlobal() {
             const listEl = document.getElementById("leaderboard-list");
             try {
-                const { data, error } = await supabaseClient
+                const { data, error } = aWait supabaseClient
                     .from('leaderboard_squidgame')
                     .select('name, score')
                     .order('score', { ascending: false })
@@ -364,8 +364,8 @@
                 cachedLeaderboard = data || [];
                 renderLeaderboard();
             } catch (err) {
-                console.error("Gagal menarik data Leaderboard:", err.message);
-                listEl.innerHTML = `<li class="leaderboard-error">Gagal memuat: ${err.message}</li>`;
+                console.error("Failed to pull Leaderboard data:", err.message);
+                listEl.innerHTML = `<li class="leaderboard-error">Failed to load: ${err.message}</li>`;
             }
         }
 
@@ -404,19 +404,19 @@
             let masukTop10 = cachedLeaderboard.length < 10 || totalSkorBobot > lowestInTop10;
 
             try {
-                const { error } = await supabaseClient
+                const { error } = aWait supabaseClient
                     .from('leaderboard_squidgame')
                     .insert([{ name: currentPlayerName, score: totalSkorBobot }]);
 
                 if (error) throw error;
 
                 if (masukTop10) {
-                    alert(`🏆 SELAMAT! ${currentPlayerName} berhasil masuk TOP 10 LEADERBOARD dengan skor ${totalSkorBobot.toFixed(2)}%!`);
+                    alert(`🏆 CONGRATULATIONS! ${currentPlayerName} has successfully entered the TOP 10 LEADERBOARD with a score of ${totalSkorBobot.toFixed(2)}%!`);
                 }
 
-                await ambilTopSkorGlobal(); // Refresh tampilan leaderboard top 10
+                aWait ambilTopSkorGlobal(); // Refresh tampilan leaderboard top 10
             } catch (err) {
-                console.error("Gagal mengirim data skor baru:", err.message);
+                console.error("Failed to send new score data:", err.message);
             }
         }
 
@@ -431,7 +431,7 @@
         function initWholeGame() {
             let nameInput = document.getElementById("player-name-input").value.trim();
             if(!nameInput) {
-                alert("Harap masukkan Nama Identitas Anda sebelum masuk arena!");
+                alert("Please enter your Name before entering the arena!");
                 return;
             }
             currentPlayerName = nameInput;
@@ -626,7 +626,7 @@
             renderG3Bridge();
             globalUpdateUI(0.40);
             document.getElementById("g3-choice").value = "";
-            document.getElementById("g3-log").textContent = "The glass bridge is ready. Choose left/right steps or wait!";
+            document.getElementById("g3-log").textContent = "The glass bridge is ready. Choose left/right steps or Wait!";
         }
 
         function renderG3Bridge() {
@@ -755,11 +755,11 @@
                 return;
             }
 
-            document.getElementById("g4-log").textContent = `Click! Empty weapons (Figures come out:${playerRoll}). The enemy is also safe(${enemyRoll}). Pull the trigger again!`;
+            document.getElementById("g4-log").textContent = `CLick! Empty weapons (Figures come out:${playerRoll}). The enemy is also safe(${enemyRoll}). Pull the trigger again!`;
         }
 
         // =====================================================================
-        // LOGIKA GAME 5: ROCK PAPER SCISSORS (Skor Kontribusi: 0.80 - 1.00)
+        // LOGIKA GAME 5: Rock Paper Scissors (Skor Kontribusi: 0.80 - 1.00)
         // =====================================================================
         function playG5() {
             let pChoice = document.getElementById("g5-choice").value;
@@ -767,9 +767,9 @@
 
             let enemyRoll = Math.floor(Math.random() * 3) + 1;
             let eChoice = "";
-            if(enemyRoll === 1) eChoice = "ROCK";
-            else if(enemyRoll === 2) eChoice = "PAPER";
-            else if(enemyRoll === 3) eChoice = "SCISSORS";
+            if(enemyRoll === 1) eChoice = "Rock";
+            else if(enemyRoll === 2) eChoice = "Paper";
+            else if(enemyRoll === 3) eChoice = "Scissors";
 
             const hands = {"Rock":"✊", "Paper":"✋", "Scissors":"✌️"};
             document.getElementById("g5-visual-player").textContent = hands[pChoice];
