@@ -62,6 +62,45 @@
         .leaderboard-empty { color: #888; text-align: center; padding: 6px 0; font-size: 0.75rem; }
         .leaderboard-error { color: #ff6b6b; text-align: center; padding: 6px 0; font-size: 0.72rem; line-height: 1.3; }
 
+        /* GAME HUB: LIST LINK KE GAME-GAME LAIN (DI BAWAH LEADERBOARD) */
+        .game-hub {
+            position: fixed;
+            top: 175px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid var(--gold);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            z-index: 250;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+            max-width: 220px;
+            max-height: 40vh;
+            overflow-y: auto;
+            color: white;
+        }
+        .game-hub h3 {
+            margin: 0 0 6px 0;
+            color: var(--gold);
+            font-size: 0.85rem;
+            text-align: center;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 6px;
+        }
+        .game-hub-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+        .game-hub-list li a {
+            display: block; text-decoration: none; color: #ddd;
+            background: rgba(255,255,255,0.05); padding: 6px 10px; border-radius: 5px;
+            transition: background 0.2s, color 0.2s;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .game-hub-list li a:hover { background: rgba(255, 215, 0, 0.15); color: var(--gold); }
+        .game-hub-list li a.active-page {
+            background: rgba(255, 215, 0, 0.25); color: var(--gold);
+            font-weight: bold; pointer-events: none;
+        }
+
         /* STATS MASTER BAR */
         .stats-container {
             display: flex; justify-content: space-between; width: 100%; max-width: 600px;
@@ -165,6 +204,16 @@
         <ol class="leaderboard-list" id="leaderboard-list">
             <li class="leaderboard-empty">Loading Data ...</li>
         </ol>
+    </div>
+
+    <div class="game-hub">
+        <h3>🎮 GAME LIST</h3>
+        <ul class="game-hub-list">
+            <li><a href="https://USERNAME.github.io/REPO/squid-game.html" class="active-page">🦑 Squid Game</a></li>
+            <li><a href="https://USERNAME.github.io/REPO/wordle.html">🔤 Wordle Indonesia</a></li>
+            <li><a href="#">🎯 Game Baru 1 (placeholder)</a></li>
+            <li><a href="#">🎯 Game Baru 2 (placeholder)</a></li>
+        </ul>
     </div>
 
     <div id="master-stats" style="display: none;">
@@ -731,7 +780,7 @@
             if(playersRemaining < 1) playersRemaining = 1;
 
             globalUpdateUI(0.40 + (progressPercent * 0.20));
-            document.getElementById("g3-log").textContent = `You Choose: ${choice}. Time Left: ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`;
+            document.getElementById("g3-log").textContent = `Anda memilih: ${choice}. Sisa waktu: ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`;
         }
 
         // =====================================================================
@@ -759,7 +808,7 @@
                 return;
             }
 
-            document.getElementById("g4-log").textContent = `Click! Empty weapons (Figures come out:${playerRoll}). The enemy is also safe(${enemyRoll}). Pull the trigger again!`;
+            document.getElementById("g4-log").textContent = `CLick! Empty weapons (Figures come out:${playerRoll}). The enemy is also safe(${enemyRoll}). Pull the trigger again!`;
         }
 
         // =====================================================================
@@ -767,7 +816,7 @@
         // =====================================================================
         function playG5() {
             let pChoice = document.getElementById("g5-choice").value;
-            if(!pChoice) { alert("Choose your Hand!"); return; }
+            if(!pChoice) { alert("Pilih tangan Anda!"); return; }
 
             let enemyRoll = Math.floor(Math.random() * 3) + 1;
             let eChoice = "";
